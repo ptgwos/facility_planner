@@ -10,7 +10,7 @@
   --bg0:#0e0e14;--bg1:#1a1a26;--bg2:#22223a;--bg3:#2e2e4a;
   --txt1:#e8e8f0;--txt2:#8888aa;--border:#33334a;--border2:#44446a;
   --blue:#378ADD;--amber:#EF9F27;--gold:#F0C040;--red:#E24B4A;
-  --gray:#888780;--lblue:#7aadd4;--green:#22AA66;
+  --gray:#888780;--lblue:#7aadd4;--green:#22AA66;--purple:#9B59B6;
   --font:'Segoe UI',system-ui,-apple-system,sans-serif;
   --mono:'Consolas','Cascadia Code','Courier New',monospace;
 }
@@ -22,14 +22,9 @@ h1{font-size:22px;font-weight:600;}
 .subtitle{font-size:13px;color:var(--txt2);}
 .label{font-size:11px;color:var(--txt2);display:block;margin-bottom:5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;}
 .section-head{font-size:10px;font-weight:600;color:var(--txt2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
-input[type=text],input[type=datetime-local],input[type=date],select{
-  border:1px solid var(--border2);border-radius:8px;padding:8px 10px;
-  font-size:13px;background:var(--bg2);color:var(--txt1);width:100%;
-  outline:none;font-family:var(--font);transition:border-color .15s;
-}
+input[type=text],input[type=datetime-local],input[type=date],select{border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;background:var(--bg2);color:var(--txt1);width:100%;outline:none;font-family:var(--font);transition:border-color .15s;}
 input:focus,select:focus{border-color:var(--blue);}
-input[type=datetime-local]::-webkit-calendar-picker-indicator,
-input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer;}
+input[type=datetime-local]::-webkit-calendar-picker-indicator,input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer;}
 select option{background:var(--bg2);}
 .mono{font-family:var(--mono);}
 .btn{padding:9px 18px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .15s;}
@@ -46,11 +41,11 @@ select option{background:var(--bg2);}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 @media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr;}}
 .flex{display:flex;align-items:center;}
-.gap8{gap:8px;}.gap12{gap:12px;}.gap16{gap:16px;}
-.mb4{margin-bottom:4px;}.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}
-.mb16{margin-bottom:16px;}.mb20{margin-bottom:20px;}.mt8{margin-top:8px;}.mt12{margin-top:12px;}
+.gap8{gap:8px;}.gap12{gap:12px;}
+.mb4{margin-bottom:4px;}.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}.mb16{margin-bottom:16px;}.mb20{margin-bottom:20px;}.mt8{margin-top:8px;}
 .hint{font-size:11px;color:var(--txt2);margin-top:5px;}
 .hint.err{color:var(--red);}
+/* Toggle */
 .toggle-wrap{display:flex;align-items:center;gap:10px;}
 .toggle{position:relative;width:52px;height:26px;flex-shrink:0;}
 .toggle input{opacity:0;width:0;height:0;position:absolute;}
@@ -62,16 +57,15 @@ select option{background:var(--bg2);}
 #login-screen{display:none;position:fixed;inset:0;background:var(--bg0);z-index:999;align-items:center;justify-content:center;}
 .login-box{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:340px;width:90%;text-align:center;}
 /* Master Timeline */
-.master-tl{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px;overflow:hidden;}
-.master-tl-title{font-size:10px;font-weight:600;color:var(--txt2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+.master-tl{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:20px;}
 .tl-container{position:relative;height:56px;}
 .tl-axis{position:absolute;left:0;right:0;top:28px;height:2px;background:var(--border2);border-radius:1px;}
 .tl-now-marker{position:absolute;top:16px;width:2px;background:var(--txt2);height:24px;border-radius:1px;z-index:3;}
 .tl-event-band{position:absolute;top:22px;height:12px;border-radius:3px;opacity:.25;}
-.tl-pin{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;}
-.tl-pin-line{width:2px;height:16px;border-radius:1px;margin-bottom:0;}
-.tl-pin-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--bg1);margin-top:-4px;z-index:2;}
-.tl-pin-label{font-size:9px;font-family:var(--mono);white-space:nowrap;margin-top:18px;color:var(--txt2);max-width:70px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
+.tl-pin{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;top:0;}
+.tl-pin-line{width:2px;border-radius:1px;}
+.tl-pin-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--bg1);z-index:2;}
+.tl-pin-label{font-size:9px;font-family:var(--mono);white-space:nowrap;color:var(--txt2);max-width:70px;overflow:hidden;text-overflow:ellipsis;text-align:center;margin-top:20px;}
 .tl-time-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);font-family:var(--mono);margin-top:4px;}
 /* Topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
@@ -81,7 +75,7 @@ select option{background:var(--bg2);}
 /* Sort bar */
 .sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .sort-bar span{font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;}
-/* Facility cards */
+/* Cards */
 .facilities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
 .fac-card{background:var(--bg1);border-radius:14px;border:2px solid var(--border);overflow:hidden;transition:border-color .2s;}
 .fac-card.ok{border-color:rgba(34,170,102,.4);}
@@ -96,12 +90,10 @@ select option{background:var(--bg2);}
 .badge-ok{background:rgba(34,170,102,.15);color:var(--green);}
 .badge-warn{background:rgba(239,159,39,.15);color:var(--amber);}
 .badge-bad{background:rgba(226,75,74,.15);color:var(--red);}
-.fac-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;font-size:12px;}
+.fac-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;font-size:12px;}
 .fac-row-label{color:var(--txt2);}
 .fac-row-val{font-family:var(--mono);font-size:11px;}
 .fac-row-val.hl{color:var(--amber);font-weight:600;}
-.fac-row-val.ok{color:var(--green);}
-.fac-row-val.bad{color:var(--red);}
 .countdown{font-size:19px;font-weight:700;font-family:var(--mono);letter-spacing:.04em;}
 .countdown.urgent{color:var(--red);}
 .countdown.soon{color:var(--amber);}
@@ -110,12 +102,12 @@ select option{background:var(--bg2);}
 .mini-cov-fill{height:100%;position:absolute;top:0;}
 /* Info boxes */
 .info-box{font-size:12px;padding:9px 13px;border-radius:8px;margin-bottom:10px;line-height:1.6;}
-/* Timeline (detail) */
-.tl-wrap{position:relative;height:40px;border-radius:8px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);}
-.tl-seg{position:absolute;top:0;bottom:0;}
-.tl-marker{position:absolute;top:0;bottom:0;width:2px;z-index:5;}
-.tl-label-row{position:relative;height:18px;margin-bottom:12px;}
-.tl-tick{position:absolute;font-size:10px;color:var(--txt2);transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);}
+/* Detail timeline */
+.dtl-wrap{position:relative;height:40px;border-radius:8px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);}
+.dtl-seg{position:absolute;top:0;bottom:0;}
+.dtl-marker{position:absolute;top:0;bottom:0;width:2px;z-index:5;}
+.dtl-label-row{position:relative;height:18px;margin-bottom:12px;}
+.dtl-tick{position:absolute;font-size:10px;color:var(--txt2);transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);}
 .legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle;}
 /* Steps */
 .phase-header{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);margin:14px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
@@ -125,13 +117,15 @@ select option{background:var(--bg2);}
 .step-note{font-size:12px;color:var(--txt2);margin:3px 0 0;line-height:1.5;}
 .step-time{font-size:11px;color:var(--txt2);font-family:var(--mono);background:var(--bg3);padding:2px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
 .bubble{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;}
+/* Reset step highlight */
+.step.reset-step{background:rgba(155,89,182,.08);border-left-style:solid !important;}
 .metric{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:10px 13px;}
 .metric-label{font-size:11px;color:var(--txt2);margin-bottom:3px;}
 .metric-val{font-size:12px;font-weight:600;font-family:var(--mono);}
 .empty{text-align:center;padding:60px 20px;color:var(--txt2);}
 .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-/* Modal */
+/* Modals */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;padding:16px;}
 .modal-backdrop.open{display:flex;}
 .modal{background:var(--bg1);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
@@ -139,9 +133,7 @@ select option{background:var(--bg2);}
 .detail-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
 .detail-backdrop.open{display:flex;}
 .detail-panel{background:var(--bg0);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:700px;width:100%;margin:auto;}
-/* Event preset */
-.event-preset-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.custom-datetime-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.event-preset-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
 </style>
 </head>
 <body>
@@ -159,7 +151,6 @@ select option{background:var(--bg2);}
 
 <div id="app-root" style="display:none;">
 <div class="container">
-
   <div class="topbar">
     <div><h1>❄️ Facility Dashboard</h1><p class="subtitle">Whiteout Survival · Alliance Facility Tracker</p></div>
     <div class="flex gap12">
@@ -170,14 +161,13 @@ select option{background:var(--bg2);}
 
   <!-- Master Timeline -->
   <div class="master-tl" id="master-tl-section" style="display:none;">
-    <div class="master-tl-title">Upcoming Attacks — All Facilities</div>
+    <div class="section-head" style="margin-bottom:10px;">Upcoming Attacks — All Facilities</div>
     <div class="tl-container" id="master-tl-container"></div>
     <div class="tl-time-labels" id="master-tl-labels"></div>
   </div>
 
-  <!-- Sort bar -->
   <div class="sort-bar">
-    <span>Sort by:</span>
+    <span>Sort:</span>
     <button class="btn btn-ghost btn-sm active" id="sort-btn-time" onclick="setSort('time')">⏱ Next Attack</button>
     <button class="btn btn-ghost btn-sm" id="sort-btn-mega" onclick="setSort('mega')">👥 Mega Alliance</button>
     <button class="btn btn-ghost btn-sm" id="sort-btn-status" onclick="setSort('status')">🚦 Status</button>
@@ -187,7 +177,6 @@ select option{background:var(--bg2);}
   <div id="facilities-container">
     <div class="empty"><div style="font-size:32px;margin-bottom:10px;">🏔️</div><p>Loading…<br><span class="spinner" style="margin-top:10px;display:inline-block;"></span></p></div>
   </div>
-
 </div>
 </div>
 
@@ -211,8 +200,6 @@ select option{background:var(--bg2);}
     <span class="label" id="f-rem-label">Remaining Active Time (d:hh:mm)</span>
     <input type="text" id="f-rem" value="2:03:00" class="mono mb4" oninput="onModalRemInput()" placeholder="d:hh:mm"/>
     <p class="hint mb16" id="f-rem-hint">= 2 days 3 hours 0 minutes</p>
-
-    <!-- Event selector -->
     <span class="label">Event Type</span>
     <div class="event-preset-row">
       <select id="f-event-type" onchange="onEventTypeChange()">
@@ -220,18 +207,15 @@ select option{background:var(--bg2);}
         <option value="frostdragon">🐉 Frostdragon Tyrant (11:00–17:00 UTC)</option>
         <option value="custom">⚙️ Custom</option>
       </select>
-      <div id="f-date-wrap">
-        <input type="date" id="f-event-date" oninput="onEventDateChange()"/>
-      </div>
+      <input type="date" id="f-event-date" oninput="onEventDateChange()"/>
     </div>
-    <div id="f-custom-wrap" style="display:none;" class="mb4">
-      <div class="custom-datetime-row">
+    <div id="f-custom-wrap" style="display:none;margin-top:8px;">
+      <div class="grid2">
         <div><span class="label">Event Start (UTC)</span><input type="datetime-local" id="f-evstart"/></div>
         <div><span class="label">Event End (UTC)</span><input type="datetime-local" id="f-evend"/></div>
       </div>
     </div>
     <p class="hint mb20" id="f-event-hint"></p>
-
     <div class="flex gap8" style="justify-content:flex-end;">
       <button class="btn btn-ghost" onclick="closeFormModal()">Cancel</button>
       <button class="btn btn-amber" id="save-btn" onclick="saveFacility()">Save Facility</button>
@@ -263,18 +247,17 @@ select option{background:var(--bg2);}
 const PASSWORDS = { admin: "646!rules", viewer: "frostbite" };
 const SUPABASE_URL = "https://frrctfpsfxhysokgdqkt.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZycmN0ZnBzZnhoeXNva2dkcWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDg1NzEsImV4cCI6MjA5NTI4NDU3MX0.AZ9yqiwQ9VkBQZZFTeeZ8DH9O3693ytoZOcvURDif0s";
-
 const EVENT_PRESETS = {
   sunfire:     { label:'Sunfire Castle Battle', startH:10, endH:22 },
   frostdragon: { label:'Frostdragon Tyrant',    startH:11, endH:17 },
-  custom:      { label:'Custom', startH:null, endH:null }
+  custom:      { label:'Custom' }
 };
 
 // ══════════════════════════════════════════════
-// TIMING CONSTANTS & HELPERS
+// CONSTANTS & HELPERS
 // ══════════════════════════════════════════════
 const M20=20*60*1000, H72=72*60*60*1000, H24=24*60*60*1000;
-const C={blue:'#378ADD',amber:'#EF9F27',gold:'#F0C040',red:'#E24B4A',gray:'#888780',lblue:'#7aadd4',green:'#22AA66'};
+const C={blue:'#378ADD',amber:'#EF9F27',gold:'#F0C040',red:'#E24B4A',gray:'#888780',lblue:'#7aadd4',green:'#22AA66',purple:'#9B59B6'};
 
 function parseTime(s){const p=s.trim().split(':').map(Number);if(p.some(isNaN)||p.some(n=>n<0))return 0;if(p.length===3)return(p[0]*24*3600+p[1]*3600+p[2]*60)*1000;if(p.length===2)return(p[0]*3600+p[1]*60)*1000;return 0;}
 function fmt(ms){const d=new Date(ms),z=n=>String(n).padStart(2,'0'),D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return`${D[d.getUTCDay()]} ${z(d.getUTCDate())}.${z(d.getUTCMonth()+1)}. ${z(d.getUTCHours())}:${z(d.getUTCMinutes())} UTC`;}
@@ -285,63 +268,220 @@ function humanDur(ms){const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)
 function fmtCountdown(ms){if(ms<=0)return'NOW!';const t=Math.floor(ms/1000);const d=Math.floor(t/86400),h=Math.floor((t%86400)/3600),m=Math.floor((t%3600)/60),s=t%60;const z=n=>String(n).padStart(2,'0');return d>0?`${d}d ${z(h)}:${z(m)}:${z(s)}`:`${z(h)}:${z(m)}:${z(s)}`;}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-function getSegments(nowMs,phase,remMs,owner,upTo){
-  const s=[];let t=nowMs;
-  if(phase==='vulnerable'){const inEnd=nowMs+remMs;s.push({type:'inactive',start:t,end:Math.min(inEnd,upTo)});t=inEnd;if(t<upTo){s.push({type:'active',owner,start:t,end:Math.min(t+H72,upTo)});t+=H72;}}
-  else{const actEnd=nowMs+remMs;s.push({type:'active',owner,start:t,end:Math.min(actEnd,upTo)});t=actEnd;}
-  while(t<upTo){s.push({type:'inactive',start:t,end:Math.min(t+H24,upTo)});t+=H24;if(t>=upTo)break;s.push({type:'active',owner,start:t,end:Math.min(t+H72,upTo)});t+=H72;}
-  return s;
+// ══════════════════════════════════════════════
+// CORE TIMING LOGIC
+// ══════════════════════════════════════════════
+
+// Generate all vulnerable windows assuming IMMEDIATE RESET at each intermediate window.
+// With reset: window spacing = M20 + H72 ≈ 72h 20min (vs 96h without reset)
+// The current window (if vulnerable) is included first.
+function generateWindows(nowMs, phase, remMs, upTo) {
+  const windows = [];
+  let t;
+  if (phase === 'vulnerable') {
+    // We're currently in a vulnerable window
+    windows.push({start: nowMs, end: nowMs + remMs, isCurrent: true});
+    // Immediate reset: battle starts now, new active starts at nowMs+M20, next vuln at nowMs+M20+H72
+    t = nowMs + M20 + H72;
+  } else {
+    // Active: wait for expiry
+    t = nowMs + remMs;
+  }
+  while (t <= upTo) {
+    windows.push({start: t, end: t + H24, isCurrent: false});
+    t = t + M20 + H72; // immediate reset at start of each window
+  }
+  return windows;
 }
 
-// Core calculation — picks LAST viable window (ABC holds longest),
-// attacks at ideal time within window (evEnd - 72h - 20min), clamped to window bounds.
-function findBestCapture(nowMs,phase,remMs,owner,evStart,evEnd){
-  const segs=getSegments(nowMs,phase,remMs,owner,evEnd+H72+H24*2);
-  const inactive=segs.filter(s=>s.type==='inactive');
-  // Viable: attacking anywhere in [win.start, win.end-M20] covers evEnd
-  const viable=inactive.filter(w=>w.end+H72>=evEnd&&w.start<evEnd);
-  if(viable.length===0){const fa=segs.find(s=>s.type==='active');if(fa&&fa.end>=evEnd)return{type:'impossible_abc_owns',exp:fa.end};return{type:'impossible_no_window'};}
-  // Last viable window = ABC holds as long as possible before event
-  const win=viable[viable.length-1];
-  // Ideal: attack so timer expires exactly at evEnd (no sooner, no later)
-  const idealBattle=evEnd-H72-M20;
-  // Clamp to window bounds — can attack anywhere in window, even 1 minute in
-  const xyzBattle=Math.max(win.start,Math.min(idealBattle,win.end-M20));
-  const xyzCap=xyzBattle+M20;
-  const xyzExp=xyzCap+H72;
-  const extra=Math.max(0,xyzExp-evEnd);
-  const waitInWindow=xyzBattle-win.start;
-  const missedStart=xyzCap>evStart;
-  const evDur=evEnd-evStart;
-  const covPct=Math.round(Math.max(0,Math.min(100,(1-Math.max(0,xyzCap-evStart)/evDur)*100)));
-  return{type:'inactive_window',xyzBattle,xyzCap,xyzExp,window:win,extra,waitInWindow,missedStart,covPct};
+// Find best plan:
+// - Last viable window for XYZ (ABC holds longest)
+// - Within that window: attack at max(win.start, evEnd-H72-M20) [latest possible = timer expires at evEnd]
+// - All earlier windows: RESET
+function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd) {
+  const windows = generateWindows(nowMs, phase, remMs, evEnd + H72 + H24);
+
+  // Viable: XYZ can capture and cover evEnd
+  // win.end + H72 >= evEnd  AND  win.start < evEnd
+  const viable = windows.filter(w => w.end + H72 >= evEnd && w.start < evEnd);
+
+  if (viable.length === 0) {
+    if (phase === 'active' && nowMs + remMs >= evEnd) return {type:'impossible_abc_owns', exp: nowMs+remMs};
+    return {type:'impossible_no_window'};
+  }
+
+  // Last viable = ABC holds longest before event
+  const win = viable[viable.length - 1];
+
+  // Optimal attack time within window: as late as possible so timer expires at evEnd
+  const idealBattle = evEnd - H72 - M20;
+  const xyzBattle = Math.max(win.start, Math.min(idealBattle, win.end - M20));
+  const xyzCap = xyzBattle + M20;
+  const xyzExp = xyzCap + H72;
+  const extra = Math.max(0, xyzExp - evEnd);
+  const waitInWindow = xyzBattle - win.start;
+  const missedStart = xyzCap > evStart;
+  const evDur = evEnd - evStart;
+  const covPct = Math.round(Math.max(0, Math.min(100, (1 - Math.max(0, xyzCap-evStart)/evDur)*100)));
+
+  // All windows before the XYZ window = reset windows
+  const resetWindows = windows.filter(w => w.start < win.start);
+
+  return {type:'inactive_window', xyzBattle, xyzCap, xyzExp, window:win, resetWindows, extra, waitInWindow, missedStart, covPct};
 }
 
-function calcFacility(fac){
-  const nowMs=Date.now();
-  const expiresAt=new Date(fac.expires_at).getTime();
-  const evEnd=new Date(fac.event_end).getTime();
-  const evStart=fac.event_start?new Date(fac.event_start).getTime():evEnd-(12*3600000);
-  const remMs=Math.max(0,expiresAt-nowMs);
-  const r=findBestCapture(nowMs,fac.phase,remMs,fac.owner,evStart,evEnd);
-  return{nowMs,remMs,evStart,evEnd,r};
+function calcFacility(fac) {
+  const nowMs = Date.now();
+  const expiresAt = new Date(fac.expires_at).getTime();
+  const evEnd = new Date(fac.event_end).getTime();
+  const evStart = fac.event_start ? new Date(fac.event_start).getTime() : evEnd - 12*3600000;
+  const remMs = Math.max(0, expiresAt - nowMs);
+  // Derive phase from timer: if expires_at passed, we're in vulnerable
+  let phase = fac.phase;
+  let effectiveRemMs = remMs;
+  if (phase === 'active' && remMs === 0) {
+    // Timer expired but not updated - show as vulnerable
+    // vulnerable started at expiresAt, so remaining = H24 - time since expiry
+    const timeSinceExpiry = nowMs - expiresAt;
+    if (timeSinceExpiry < H24) {
+      phase = 'vulnerable';
+      effectiveRemMs = H24 - timeSinceExpiry;
+    }
+    // if > H24 since expiry, auto-reclaim happened - treat as active with new 72h
+    // This is approximate; user should update manually
+  }
+  const r = findBestCapture(nowMs, phase, effectiveRemMs, fac.owner, evStart, evEnd);
+  return {nowMs, remMs, effectiveRemMs, phase, evStart, evEnd, r};
+}
+
+// Build timeline segments for rendering
+function buildTimelineSegs(nowMs, phase, remMs, owner, r, evEnd) {
+  if (r.type !== 'inactive_window') return [];
+  const {xyzBattle, xyzCap, window:win, resetWindows} = r;
+  const segs = [];
+
+  // Current state
+  if (phase === 'vulnerable') {
+    const curWin = resetWindows.find(rw => rw.isCurrent);
+    if (curWin) {
+      // Current window is a reset - short battle then ABC active
+      segs.push({type:'battle',color:C.gold,start:nowMs,end:Math.min(nowMs+M20,evEnd)});
+      const nextStart = resetWindows.filter(rw=>!rw.isCurrent)[0]?.start ?? win.start;
+      segs.push({type:'active',owner,color:C.blue,start:nowMs+M20,end:Math.min(nextStart,evEnd)});
+    } else {
+      // Current window IS the XYZ window
+      segs.push({type:'inactive',start:nowMs,end:Math.min(xyzBattle,evEnd)});
+    }
+  } else {
+    // Active phase
+    const firstWinStart = resetWindows.length>0 ? resetWindows[0].start : win.start;
+    segs.push({type:'active',owner,color:C.blue,start:nowMs,end:Math.min(firstWinStart,evEnd)});
+  }
+
+  // Intermediate reset windows
+  const futureResets = resetWindows.filter(rw => !rw.isCurrent || phase!=='vulnerable');
+  for (let i=0; i<futureResets.length; i++) {
+    const rw = futureResets[i];
+    if (rw.start >= evEnd) break;
+    segs.push({type:'battle',color:C.gold,start:rw.start,end:Math.min(rw.start+M20,evEnd)});
+    const nextStart = i+1<futureResets.length ? futureResets[i+1].start : win.start;
+    segs.push({type:'active',owner,color:C.blue,start:rw.start+M20,end:Math.min(nextStart,evEnd)});
+  }
+
+  // XYZ takeover window
+  if (win.start < evEnd) {
+    segs.push({type:'inactive',start:win.start,end:Math.min(xyzBattle,evEnd)});
+    if (xyzBattle<evEnd) segs.push({type:'battle',color:C.gold,start:xyzBattle,end:Math.min(xyzCap,evEnd)});
+    if (xyzCap<evEnd) segs.push({type:'active',color:C.amber,start:xyzCap,end:evEnd});
+  }
+
+  return segs.filter(s=>s.start<evEnd&&s.end>s.start);
+}
+
+// Build action plan steps
+function buildSteps(nowMs, phase, remMs, owner, desired, r, evStart, evEnd) {
+  const steps=[];let n=1;
+  const add=(obj,ph)=>steps.push({n:n++,phase:ph,...obj});
+
+  // Opening state
+  if (phase === 'vulnerable') {
+    const isResetWin = r.type==='inactive_window' && r.resetWindows && r.resetWindows.some(rw=>rw.isCurrent);
+    if (isResetWin) {
+      add({color:C.purple,title:`Facility is VULNERABLE — RESET recommended now!`,time:nowMs,
+        note:`${owner} loses hold. ${desired} should attack immediately so ${owner} can re-occupy. Battle ends ~${fmt(nowMs+M20)}.`,isReset:true},'setup');
+    } else {
+      add({color:C.gold,title:`Facility is VULNERABLE — XYZ takeover window`,time:nowMs,
+        note:`This is the handover window. ${r.type==='inactive_window'?`Wait ${dur(r.waitInWindow)} before ${desired} attacks.`:''}` },'setup');
+    }
+  } else {
+    add({color:C.blue,title:`${owner} holds the facility`,time:nowMs,
+      note:`Active timer: ${humanDur(remMs)} remaining. Expires ${fmt(nowMs+remMs)}.`},'setup');
+  }
+
+  if (r.type !== 'inactive_window') return steps;
+
+  const {xyzBattle,xyzCap,xyzExp,window:win,resetWindows,waitInWindow} = r;
+  const sameTime = Math.abs(xyzExp-evEnd)<60000;
+
+  // Intermediate reset windows
+  const futureResets = resetWindows.filter(rw=>!(rw.isCurrent&&phase==='vulnerable'));
+  for (const rw of futureResets) {
+    add({color:C.gray,title:`${owner}'s 72h timer expires`,time:rw.start,
+      note:`Vulnerable window opens. ${desired} should attack IMMEDIATELY for reset.`},'reset');
+    add({color:C.purple,title:`⚡ RESET: ${desired} attacks → ${owner} re-occupies`,time:rw.start,
+      note:`${desired} sends troops → battle starts. ${owner} immediately re-occupies after 20 min. ${owner} regains facility at ${fmt(rw.start+M20)} with fresh 72h timer.`,isReset:true},'reset');
+    add({color:C.blue,title:`${owner} holds — fresh 72h timer`,time:rw.start+M20,
+      note:`New 72h active period. Expires ${fmt(rw.start+M20+H72)}.`},'reset');
+  }
+
+  // XYZ takeover window
+  const alreadyInWindow = phase==='vulnerable' && win.isCurrent;
+  if (!alreadyInWindow) {
+    add({color:C.gray,title:`${owner}'s 72h expires — XYZ TAKEOVER window opens`,time:win.start,
+      note:`This time: do NOT reset! ${desired} will take over. Window: ${fmt(win.start)} – ${fmt(win.end)}.`},'attack');
+  }
+
+  if (waitInWindow > 60000) {
+    add({color:C.gray,title:`${desired} waits within the window`,time:win.start,
+      note:`Wait ${dur(waitInWindow)} until ${fmt(xyzBattle)} — timer will expire at event end.`,isWait:true},'attack');
+  }
+
+  add({color:C.gold,title:`${desired}: start 20-min occupation (TAKEOVER — no reset!)`,time:xyzBattle,
+    note:`${desired} occupies. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`,darkText:true},'attack');
+  add({color:C.amber,title:`${desired} captures — 72h timer starts`,time:xyzCap,
+    note:`Timer expires ${fmt(xyzExp)}${sameTime?' (= event end)':` (+${dur(r.extra)})`}.`,darkText:true},'attack');
+
+  add({color:C.green,title:`Event starts`,time:evStart,
+    note:r.missedStart?`⚠ ${desired} captured ${dur(xyzCap-evStart)} AFTER event start!`:`${desired} already holds. Full coverage ✓`,
+    highlight:r.missedStart},'event');
+  add({color:C.red,highlight:true,title:`Event end — ${desired} holds`,time:evEnd,
+    note:sameTime?'Timer expires now.':`${desired} holds with ${dur(xyzExp-evEnd)} remaining ✓`},'event');
+
+  if (!sameTime) add({color:C.gray,title:`${desired}'s 72h timer expires`,time:xyzExp,note:`Vulnerable phase. Ends ${fmt(xyzExp+H24)}.`},'post');
+  const inStart=sameTime?evEnd:xyzExp;
+  add({color:C.blue,title:`${owner} reclaims — RESET (recommended!)`,time:inStart,
+    note:`${desired} attacks → ${owner} re-occupies. ${owner} regains with fresh 72h at ${fmt(inStart+M20)}.`,isOptA:true},'post');
+  add({color:C.amber,title:`${desired} reclaims — auto (after 24h)`,time:inStart+H24,
+    note:`If nobody acts: facility auto-returns to ${desired} — NOT ${owner}! Use option A.`,isOptB:true,warnOpt:true},'post');
+
+  return steps;
 }
 
 // ══════════════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════════════
 function tryLogin(){
-  const v=document.getElementById("pw-input").value;
-  if(v===PASSWORDS.admin){sessionStorage.setItem("ftp_auth","admin");document.getElementById("login-screen").style.display="none";document.getElementById("app-root").style.display="";initApp();}
-  else if(v===PASSWORDS.viewer){sessionStorage.setItem("ftp_auth","viewer");document.getElementById("login-screen").style.display="none";document.getElementById("app-root").style.display="";initApp();}
-  else{const e=document.getElementById("pw-error");e.textContent="Wrong password.";e.style.display="";document.getElementById("pw-input").value="";document.getElementById("pw-input").focus();}
+  const v=document.getElementById('pw-input').value;
+  if(v===PASSWORDS.admin){sessionStorage.setItem('ftp_auth','admin');document.getElementById('login-screen').style.display='none';document.getElementById('app-root').style.display='';initApp();}
+  else if(v===PASSWORDS.viewer){sessionStorage.setItem('ftp_auth','viewer');document.getElementById('login-screen').style.display='none';document.getElementById('app-root').style.display='';initApp();}
+  else{const e=document.getElementById('pw-error');e.textContent='Wrong password.';e.style.display='';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
 }
-function isAdmin(){return sessionStorage.getItem("ftp_auth")==="admin";}
-document.addEventListener("DOMContentLoaded",()=>{
-  const role=sessionStorage.getItem("ftp_auth");
-  if(role==="admin"||role==="viewer"){document.getElementById("app-root").style.display="";initApp();}
-  else{document.getElementById("login-screen").style.display="flex";}
-  document.getElementById("pw-input").addEventListener("keydown",e=>{if(e.key==="Enter")tryLogin();});
+function isAdmin(){return sessionStorage.getItem('ftp_auth')==='admin';}
+document.addEventListener('DOMContentLoaded',()=>{
+  const role=sessionStorage.getItem('ftp_auth');
+  if(role==='admin'||role==='viewer'){document.getElementById('app-root').style.display='';initApp();}
+  else document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
 });
 
 // ══════════════════════════════════════════════
@@ -350,27 +490,19 @@ document.addEventListener("DOMContentLoaded",()=>{
 let sb, facilities=[], detailId=null, sortMode='time';
 
 async function initApp(){
-  // Show/hide admin-only UI
-  if(!isAdmin()){
-    const btn=document.getElementById('btn-add-facility');
-    if(btn)btn.style.display='none';
-  }
-
+  if(!isAdmin()) document.getElementById('btn-add-facility').style.display='none';
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   setSyncStatus(false);
   await loadFacilities();
   setSyncStatus(true);
-  sb.channel('fac-changes').on('postgres_changes',{event:'*',schema:'public',table:'facilities'},()=>loadFacilities()).subscribe(s=>setSyncStatus(s==='SUBSCRIBED'));
+  sb.channel('fac').on('postgres_changes',{event:'*',schema:'public',table:'facilities'},()=>loadFacilities()).subscribe(s=>setSyncStatus(s==='SUBSCRIBED'));
   setInterval(()=>{renderCards();renderMasterTimeline();},1000);
   setDefaultDate();
 }
-
 async function loadFacilities(){
   const{data,error}=await sb.from('facilities').select('*').order('created_at',{ascending:true});
   if(error){document.getElementById('warn-global').innerHTML=`<div class="info-box" style="background:var(--red)18;border:1px solid var(--red)88;">DB error: ${error.message}</div>`;return;}
-  facilities=data||[];
-  renderCards();
-  renderMasterTimeline();
+  facilities=data||[];renderCards();renderMasterTimeline();
 }
 function setSyncStatus(live){
   document.getElementById('sync-dot').className='sync-dot'+(live?' live':'');
@@ -382,128 +514,84 @@ function setSyncStatus(live){
 // ══════════════════════════════════════════════
 function renderMasterTimeline(){
   const nowMs=Date.now();
-  const validFacs=facilities.filter(f=>{const c=calcFacility(f);return c.r.type==='inactive_window';});
+  const validFacs=facilities.filter(f=>calcFacility(f).r.type==='inactive_window');
   const sec=document.getElementById('master-tl-section');
   if(validFacs.length===0){sec.style.display='none';return;}
   sec.style.display='';
-
-  // Time range: now to max(event_end + 6h), min 24h window
   const maxEnd=Math.max(...validFacs.map(f=>new Date(f.event_end).getTime()))+6*3600000;
   const tlEnd=Math.max(nowMs+H24,maxEnd);
   const tlRange=tlEnd-nowMs;
-
-  const container=document.getElementById('master-tl-container');
-  container.innerHTML='';
-
-  // Axis
+  const container=document.getElementById('master-tl-container');container.innerHTML='';
   const axis=document.createElement('div');axis.className='tl-axis';container.appendChild(axis);
-
-  // Now marker
   const nm=document.createElement('div');nm.className='tl-now-marker';nm.style.left='0';container.appendChild(nm);
-
-  // Event bands (one per unique event_end)
+  // Event bands
   const eventEnds=new Map();
-  validFacs.forEach(f=>{
-    const evEnd=new Date(f.event_end).getTime();
-    const evStart=f.event_start?new Date(f.event_start).getTime():evEnd-12*3600000;
-    if(!eventEnds.has(evEnd))eventEnds.set(evEnd,evStart);
-  });
+  validFacs.forEach(f=>{const evEnd=new Date(f.event_end).getTime();const evStart=f.event_start?new Date(f.event_start).getTime():evEnd-12*3600000;if(!eventEnds.has(evEnd))eventEnds.set(evEnd,evStart);});
   eventEnds.forEach((evStart,evEnd)=>{
-    const left=Math.max(0,(evStart-nowMs)/tlRange*100);
-    const width=Math.min(100,(evEnd-Math.max(evStart,nowMs))/tlRange*100);
-    if(width>0){
-      const band=document.createElement('div');band.className='tl-event-band';
-      band.style.cssText=`left:${left.toFixed(2)}%;width:${width.toFixed(2)}%;background:${C.amber};`;
-      container.appendChild(band);
-    }
+    const left=Math.max(0,(evStart-nowMs)/tlRange*100);const width=Math.min(100,(evEnd-Math.max(evStart,nowMs))/tlRange*100);
+    if(width>0){const b=document.createElement('div');b.className='tl-event-band';b.style.cssText=`left:${left.toFixed(2)}%;width:${width.toFixed(2)}%;background:${C.amber};`;container.appendChild(b);}
   });
-
-  // Attack pins — sorted by time to label above/below alternating
-  const pins=validFacs.map(f=>{
-    const{r,evStart,evEnd}=calcFacility(f);
-    return{fac:f,attackMs:r.xyzBattle,r,evStart,evEnd};
-  }).sort((a,b)=>a.attackMs-b.attackMs);
-
-  pins.forEach((p,i)=>{
-    const lp=(p.attackMs-nowMs)/tlRange*100;
-    if(lp<0||lp>100)return;
+  // Attack pins
+  validFacs.map(f=>({f,r:calcFacility(f).r})).sort((a,b)=>a.r.xyzBattle-b.r.xyzBattle).forEach((p,i)=>{
+    const lp=(p.r.xyzBattle-nowMs)/tlRange*100;if(lp<0||lp>100)return;
     const color=p.r.missedStart?C.amber:C.green;
-    const pin=document.createElement('div');pin.className='tl-pin';
-    pin.style.left=lp.toFixed(2)+'%';
-    pin.style.top='0';
-    pin.title=`${p.fac.name}: Attack at ${fmt(p.attackMs)}`;
-    pin.onclick=()=>openDetail(p.fac.id);
-    // alternating above/below: even pins normal, odd pins offset
     const offset=i%2===0?0:10;
-    pin.innerHTML=`
-      <div class="tl-pin-line" style="height:${16+offset}px;background:${color};margin-top:${offset>0?0:offset}px;"></div>
-      <div class="tl-pin-dot" style="background:${color};"></div>
-      <div class="tl-pin-label" style="color:${color};font-size:9px;">${escHtml(p.fac.name)}<br>${fmtShort(p.attackMs)}</div>`;
+    const pin=document.createElement('div');pin.className='tl-pin';
+    pin.style.left=lp.toFixed(2)+'%';pin.title=`${p.f.name}: Attack at ${fmt(p.r.xyzBattle)}`;
+    pin.onclick=()=>openDetail(p.f.id);
+    pin.innerHTML=`<div class="tl-pin-line" style="height:${16+offset}px;background:${color};margin-top:${offset}px;"></div><div class="tl-pin-dot" style="background:${color};margin-top:-4px;"></div><div class="tl-pin-label" style="color:${color};">${escHtml(p.f.name)}<br>${fmtShort(p.r.xyzBattle)}</div>`;
     container.appendChild(pin);
   });
-
-  // Time labels
-  const lbls=document.getElementById('master-tl-labels');lbls.innerHTML='';
+  const lbls=document.getElementById('master-tl-labels');
   lbls.innerHTML=`<span>${fmtShort(nowMs)}</span><span>${fmtShort(nowMs+tlRange/2)}</span><span>${fmtShort(tlEnd)}</span>`;
 }
 
 // ══════════════════════════════════════════════
-// SORT
+// SORT & CARDS
 // ══════════════════════════════════════════════
-function setSort(mode){
-  sortMode=mode;
-  ['time','mega','status'].forEach(m=>{
-    document.getElementById(`sort-btn-${m}`).classList.toggle('active',m===mode);
-  });
+function setSort(m){
+  sortMode=m;
+  ['time','mega','status'].forEach(k=>document.getElementById(`sort-btn-${k}`).classList.toggle('active',k===m));
   renderCards();
 }
-
 function sortedFacilities(){
-  const nowMs=Date.now();
-  const withCalc=facilities.map(f=>({f,c:calcFacility(f)}));
-  if(sortMode==='mega'){
-    return withCalc.sort((a,b)=>a.f.desired.localeCompare(b.f.desired)).map(x=>x.f);
-  }
-  if(sortMode==='status'){
-    const rank=c=>c.r.type==='inactive_window'?(c.r.missedStart?1:0):2;
-    return withCalc.sort((a,b)=>rank(a.c)-rank(b.c)).map(x=>x.f);
-  }
-  // time: sort by attack time, impossible last
-  return withCalc.sort((a,b)=>{
-    const ta=a.c.r.type==='inactive_window'?a.c.r.xyzBattle:Infinity;
-    const tb=b.c.r.type==='inactive_window'?b.c.r.xyzBattle:Infinity;
-    return ta-tb;
-  }).map(x=>x.f);
+  const wc=facilities.map(f=>({f,c:calcFacility(f)}));
+  if(sortMode==='mega') return wc.sort((a,b)=>a.f.desired.localeCompare(b.f.desired)).map(x=>x.f);
+  if(sortMode==='status'){const rank=c=>c.r.type==='inactive_window'?(c.r.missedStart?1:0):2;return wc.sort((a,b)=>rank(a.c)-rank(b.c)).map(x=>x.f);}
+  return wc.sort((a,b)=>{const ta=a.c.r.type==='inactive_window'?a.c.r.xyzBattle:Infinity;const tb=b.c.r.type==='inactive_window'?b.c.r.xyzBattle:Infinity;return ta-tb;}).map(x=>x.f);
 }
 
-// ══════════════════════════════════════════════
-// RENDER CARDS
-// ══════════════════════════════════════════════
 function renderCards(){
   const container=document.getElementById('facilities-container');
   if(facilities.length===0){container.innerHTML='<div class="empty"><div style="font-size:32px;margin-bottom:10px;">🏔️</div><p>No facilities yet.<br><span style="font-size:12px;">Click <strong>+ Add Facility</strong> to get started.</span></p></div>';return;}
-  // preserve scroll
-  const old=container.querySelector('.facilities-grid');
   const grid=document.createElement('div');grid.className='facilities-grid';
   sortedFacilities().forEach(f=>grid.appendChild(makeCard(f)));
+  const old=container.querySelector('.facilities-grid');
   if(old)container.replaceChild(grid,old);else{container.innerHTML='';container.appendChild(grid);}
 }
 
 function makeCard(fac){
-  const{nowMs,remMs,evStart,evEnd,r}=calcFacility(fac);
-  const card=document.createElement('div');card.className='fac-card';card.dataset.id=fac.id;
+  const{nowMs,phase,effectiveRemMs,evStart,evEnd,r}=calcFacility(fac);
+  const card=document.createElement('div');card.className='fac-card';
+
   let statusClass,badgeClass,badgeText;
   if(r.type!=='inactive_window'){statusClass='impossible';badgeClass='badge-bad';badgeText='✗ Impossible';}
   else if(r.missedStart){statusClass='warn';badgeClass='badge-warn';badgeText=`⚠ ${r.covPct}% covered`;}
   else{statusClass='ok';badgeClass='badge-ok';badgeText='✓ Full coverage';}
   card.classList.add(statusClass);
-  const phColor=fac.phase==='vulnerable'?C.amber:C.blue;
-  const phText=fac.phase==='vulnerable'?'VULNERABLE':'ACTIVE';
-  const evLabel=fac.event_type&&fac.event_type!=='custom'?(EVENT_PRESETS[fac.event_type]?.label||fac.event_type):`${fmtTime(evStart)}–${fmtTime(evEnd)}`;
+
+  // Phase badge (auto-derived)
+  const phColor=phase==='vulnerable'?C.amber:C.blue;
+  const phText=phase==='vulnerable'?'VULNERABLE':'ACTIVE';
+  const evLabel=fac.event_type&&fac.event_type!=='custom'?(EVENT_PRESETS[fac.event_type]?.label||''):'';
+
+  // Resets count
+  const resetCount=r.type==='inactive_window'?r.resetWindows.length:0;
+
   let bodyHtml='';
   if(r.type==='inactive_window'){
     const attackIn=r.xyzBattle-nowMs;
-    const cdClass=attackIn<0?'urgent':attackIn<3600000?'urgent':attackIn<H24?'soon':'fine';
+    const cdClass=attackIn<=0?'urgent':attackIn<3600000?'urgent':attackIn<H24?'soon':'fine';
     const evDur=evEnd-evStart;
     const abcPct=Math.max(0,Math.min(100,(Math.min(r.xyzCap,evEnd)-evStart)/evDur*100));
     const xyzLeft=Math.max(0,(Math.max(r.xyzCap,evStart)-evStart)/evDur*100);
@@ -515,15 +603,17 @@ function makeCard(fac){
       </div>
       <div class="fac-row"><span class="fac-row-label">⚔ Attack at</span><span class="fac-row-val hl">${fmt(r.xyzBattle)}</span></div>
       <div class="fac-row"><span class="fac-row-label">🏳 Capture at</span><span class="fac-row-val">${fmt(r.xyzCap)}</span></div>
-      <div class="fac-row" style="margin-bottom:4px;"><span class="fac-row-label">📅 ${evLabel}</span><span class="fac-row-val" style="font-size:10px;">${fmtTime(evStart)}–${fmtTime(evEnd)}</span></div>
+      ${resetCount>0?`<div class="fac-row"><span class="fac-row-label">⚡ Resets needed</span><span class="fac-row-val" style="color:${C.purple};font-weight:600;">${resetCount}×</span></div>`:''}
+      <div class="fac-row" style="margin-bottom:4px;"><span class="fac-row-label">📅 ${evLabel||'Event'}</span><span class="fac-row-val" style="font-size:10px;">${fmtTime(evStart)}–${fmtTime(evEnd)}</span></div>
       <div class="mini-cov">
         <div class="mini-cov-fill" style="background:${C.blue};opacity:.7;left:0;width:${abcPct.toFixed(1)}%;"></div>
         <div class="mini-cov-fill" style="background:${C.amber};left:${xyzLeft.toFixed(1)}%;width:${xyzPct.toFixed(1)}%;"></div>
       </div>
       ${r.missedStart?`<div style="font-size:11px;color:var(--red);margin-top:4px;">⚠ ${dur(r.xyzCap-evStart)} gap at event start</div>`:''}`;
   } else {
-    bodyHtml=`<div style="padding:8px 0;color:var(--red);font-size:13px;font-weight:500;">${r.type==='impossible_abc_owns'?`${escHtml(fac.owner)}'s timer expires after event end.`:'No vulnerable window in time.'}</div>`;
+    bodyHtml=`<div style="padding:8px 0;color:var(--red);font-size:13px;font-weight:500;">${r.type==='impossible_abc_owns'?`${escHtml(fac.owner)}'s timer expires after event end.`:'No viable window in time.'}</div>`;
   }
+
   card.innerHTML=`
     <div class="fac-header">
       <div class="flex" style="justify-content:space-between;align-items:flex-start;">
@@ -552,13 +642,14 @@ function makeCard(fac){
 // DETAIL
 // ══════════════════════════════════════════════
 function openDetail(id){
-  detailId=id;const fac=facilities.find(f=>f.id===id);if(!fac)return;
+  detailId=id;
+  const fac=facilities.find(f=>f.id===id);if(!fac)return;
   document.getElementById('detail-title').textContent=fac.name;
   const{evStart,evEnd}=calcFacility(fac);
   document.getElementById('detail-subtitle').textContent=`${fac.owner} → ${fac.desired}  ·  ${fmt(evStart)} – ${fmt(evEnd)}`;
-  renderDetail(fac);
   const des=document.getElementById('detail-edit-btn');
-  if(des)des.innerHTML=isAdmin()?'<button class="btn btn-ghost btn-sm" onclick="editFromDetail()">✏️ Edit</button>':'';
+  des.innerHTML=isAdmin()?'<button class="btn btn-ghost btn-sm" onclick="editFromDetail()">✏️ Edit</button>':'';
+  renderDetail(fac);
   document.getElementById('detail-modal').classList.add('open');
 }
 function closeDetail(){document.getElementById('detail-modal').classList.remove('open');detailId=null;}
@@ -570,18 +661,31 @@ function renderDetail(fac){
   const evEnd=new Date(fac.event_end).getTime();
   const evStart=fac.event_start?new Date(fac.event_start).getTime():evEnd-12*3600000;
   const remMs=Math.max(0,expiresAt-nowMs);
-  const r=findBestCapture(nowMs,fac.phase,remMs,fac.owner,evStart,evEnd);
+  let phase=fac.phase,effectiveRemMs=remMs;
+  if(phase==='active'&&remMs===0){const d=nowMs-expiresAt;if(d<H24){phase='vulnerable';effectiveRemMs=H24-d;}}
+  const r=findBestCapture(nowMs,phase,effectiveRemMs,fac.owner,evStart,evEnd);
   const container=document.getElementById('detail-content');container.innerHTML='';
+
   function addBox(msg,color,strong){const d=document.createElement('div');d.className='info-box';d.style.cssText=`background:${color}22;border:${strong?'1.5px':'1px'} solid ${color}${strong?'':'88'};color:${strong?'#fff':'#ccc'};${strong?'font-weight:500;':''}`;d.textContent=msg;container.appendChild(d);}
-  if(r.type==='impossible_abc_owns'){addBox(`⚠ Impossible: ${fac.owner}'s timer expires at ${fmt(r.exp)} — after event end.`,C.red,true);}
-  else if(r.type==='impossible_no_window'){addBox(`⚠ Impossible: no vulnerable window allows ${fac.desired} to cover the event.`,C.red,true);}
-  else{
-    const{xyzCap,xyzExp,extra,waitInWindow,missedStart,covPct}=r;
+
+  if(r.type==='impossible_abc_owns') addBox(`⚠ Impossible: ${fac.owner}'s timer expires after event end.`,C.red,true);
+  else if(r.type==='impossible_no_window') addBox(`⚠ Impossible: no viable window to cover the event.`,C.red,true);
+  else {
+    const{xyzCap,xyzExp,extra,waitInWindow,missedStart,covPct,resetWindows,window:win}=r;
     const sameTime=Math.abs(xyzExp-evEnd)<60000;
-    if(missedStart)addBox(`⚠ Partial coverage: ${fac.desired} captures ${dur(xyzCap-evStart)} after event start. Coverage: ${covPct}%.`,C.red,true);
-    let msg=sameTime?`Optimal: ${fac.desired} waits ${dur(waitInWindow)} in the window, captures at ${fmt(xyzCap)}. Timer expires exactly at event end.`:waitInWindow>60000?`${fac.desired} waits ${dur(waitInWindow)} (until ${fmt(r.xyzBattle)}), captures at ${fmt(xyzCap)}. Timer expires ${dur(extra)} after event end.`:`${fac.desired} occupies at window opening (${fmt(r.window.start)}). Timer expires ${dur(extra)} after event end.`;
-    addBox(msg,missedStart?C.gold:C.amber,false);
-    if(!sameTime&&!missedStart)addBox(`After event: ${fac.owner} must actively reclaim (option A). If nobody acts, facility auto-returns to ${fac.desired}!`,C.gold,false);
+    if(missedStart) addBox(`⚠ Partial coverage: ${fac.desired} captures ${dur(xyzCap-evStart)} after event start. Coverage: ${covPct}%.`,C.red,true);
+
+    let msg=`Plan: `;
+    if(resetWindows.length>0) msg+=`${resetWindows.length} reset${resetWindows.length>1?'s':''} needed before handover. `;
+    msg+=sameTime?`${fac.desired} waits ${dur(waitInWindow)} in the window, captures at ${fmt(xyzCap)}. Timer expires exactly at event end.`:waitInWindow>60000?`${fac.desired} waits ${dur(waitInWindow)} (until ${fmt(r.xyzBattle)}), captures at ${fmt(xyzCap)}. Timer expires ${dur(extra)} after event end.`:`${fac.desired} occupies at window opening (${fmt(win.start)}). Timer expires ${dur(extra)} after event end.`;
+    addBox(msg,C.amber,false);
+
+    // Reset notice
+    if(resetWindows.length>0){
+      addBox(`⚡ Reset plan: At each intermediate vulnerable window, ${fac.desired} attacks and ${fac.owner} immediately re-occupies. This gives ${fac.owner} a fresh 72h timer after just ~20 minutes.`,C.purple,false);
+    }
+    if(!sameTime&&!missedStart) addBox(`After event: ${fac.owner} must actively reclaim (reset). If nobody acts, facility auto-returns to ${fac.desired}!`,C.gold,false);
+
     // Coverage bar
     const evDur=evEnd-evStart;
     const abcPct=Math.max(0,Math.min(100,(Math.min(xyzCap,evEnd)-evStart)/evDur*100));
@@ -589,106 +693,82 @@ function renderDetail(fac){
     const xyzPct=Math.max(0,Math.min(100,(evEnd-Math.max(xyzCap,evStart))/evDur*100));
     const cb=document.createElement('div');cb.style.marginBottom='16px';
     cb.innerHTML=`<p class="section-head mb8">Event Coverage</p>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:5px;">
-        <span style="font-family:var(--mono);">${fmtTime(evStart)}</span>
-        <span style="font-weight:700;color:${missedStart?C.red:C.green};">${missedStart?`⚠ ${covPct}% covered`:'100% ✓'}</span>
-        <span style="font-family:var(--mono);">${fmtTime(evEnd)}</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:5px;"><span style="font-family:var(--mono);">${fmtTime(evStart)}</span><span style="font-weight:700;color:${missedStart?C.red:C.green};">${missedStart?`⚠ ${covPct}%`:'100% ✓'}</span><span style="font-family:var(--mono);">${fmtTime(evEnd)}</span></div>
       <div style="height:10px;border-radius:5px;background:var(--bg2);overflow:hidden;position:relative;border:1px solid var(--border);">
         <div style="position:absolute;height:100%;background:${C.blue};opacity:.7;left:0;width:${abcPct.toFixed(1)}%;"></div>
         <div style="position:absolute;height:100%;background:${C.amber};left:${xyzLeft.toFixed(1)}%;width:${xyzPct.toFixed(1)}%;"></div>
       </div>`;
     container.appendChild(cb);
+
     // Timeline
     const tlDiv=document.createElement('div');tlDiv.style.marginBottom='16px';
     tlDiv.innerHTML='<p class="section-head mb8">Timeline (now → event end)</p>';
     container.appendChild(tlDiv);
-    const tlWrap=document.createElement('div');tlWrap.className='tl-wrap';tlDiv.appendChild(tlWrap);
-    const lblRow=document.createElement('div');lblRow.className='tl-label-row';tlDiv.appendChild(lblRow);
-    renderTimeline(tlWrap,lblRow,nowMs,fac.phase,remMs,fac.owner,fac.desired,r,evStart,evEnd);
+    const tlWrap=document.createElement('div');tlWrap.className='dtl-wrap';tlDiv.appendChild(tlWrap);
+    const lblRow=document.createElement('div');lblRow.className='dtl-label-row';tlDiv.appendChild(lblRow);
+    renderDetailTimeline(tlWrap,lblRow,nowMs,phase,effectiveRemMs,fac.owner,fac.desired,r,evStart,evEnd);
+
     const leg=document.createElement('div');leg.style.cssText='display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-size:11px;color:var(--txt2);';
-    leg.innerHTML=`<span><span class="legend-dot" style="background:${C.blue};"></span>${escHtml(fac.owner)}</span><span><span class="legend-dot" style="background:${C.amber};"></span>${escHtml(fac.desired)}</span><span><span class="legend-dot" style="background:${C.gold};"></span>Occupation</span><span><span class="legend-dot" style="background-image:repeating-linear-gradient(135deg,#2e2e4a 0,#2e2e4a 4px,rgba(136,135,128,.4) 4px,rgba(136,135,128,.4) 8px);background-color:#2e2e4a;"></span>Vulnerable</span>`;
+    leg.innerHTML=`<span><span class="legend-dot" style="background:${C.blue};"></span>${escHtml(fac.owner)}</span><span><span class="legend-dot" style="background:${C.amber};"></span>${escHtml(fac.desired)}</span><span><span class="legend-dot" style="background:${C.gold};"></span>Battle (20min)</span><span><span class="legend-dot" style="background-image:repeating-linear-gradient(135deg,#2e2e4a 0,#2e2e4a 4px,rgba(136,135,128,.4) 4px,rgba(136,135,128,.4) 8px);background-color:#2e2e4a;"></span>Vulnerable (wait)</span><span><span class="legend-dot" style="background:${C.purple};opacity:.6;"></span>⚡ Reset</span>`;
     container.appendChild(leg);
   }
+
   const st=document.createElement('p');st.className='section-head mb8';st.textContent='Action Plan';container.appendChild(st);
-  const steps=buildSteps(nowMs,fac.phase,remMs,fac.owner,fac.desired,r,evStart,evEnd);
-  renderSteps(steps,container);
+  renderSteps(buildSteps(nowMs,phase,effectiveRemMs,fac.owner,fac.desired,r,evStart,evEnd),container);
+
   if(r.type==='inactive_window'){
     const sameTime=Math.abs(r.xyzExp-evEnd)<60000;
     const md=document.createElement('div');md.className='grid3';md.style.marginTop='14px';
-    md.innerHTML=`<div class="metric"><p class="metric-label">${escHtml(fac.owner)} holds until</p><p class="metric-val">${fmt(r.window.start).split(' ').slice(0,3).join(' ')}</p></div><div class="metric"><p class="metric-label">XYZ timer expires</p><p class="metric-val">${sameTime?'Event end':fmt(r.xyzExp).split(' ').slice(0,3).join(' ')+` (+${dur(r.extra)})`}</p></div><div class="metric"><p class="metric-label">${escHtml(fac.owner)} reclaims (A)</p><p class="metric-val">${fmt((sameTime?evEnd:r.xyzExp)+M20).split(' ').slice(0,3).join(' ')}</p></div>`;
+    md.innerHTML=`<div class="metric"><p class="metric-label">${escHtml(fac.owner)} holds until</p><p class="metric-val">${fmt(r.window.start).split(' ').slice(0,3).join(' ')}</p></div><div class="metric"><p class="metric-label">XYZ timer expires</p><p class="metric-val">${sameTime?'Event end':fmt(r.xyzExp).split(' ').slice(0,3).join(' ')+` (+${dur(r.extra)})`}</p></div><div class="metric"><p class="metric-label">${escHtml(fac.owner)} reclaims</p><p class="metric-val">${fmt((sameTime?evEnd:r.xyzExp)+M20).split(' ').slice(0,3).join(' ')} (reset)</p></div>`;
     container.appendChild(md);
   }
 }
 
-function renderTimeline(bar,lblRow,nowMs,phase,remMs,owner,desired,r,evStart,evEnd){
+function renderDetailTimeline(bar,lblRow,nowMs,phase,remMs,owner,desired,r,evStart,evEnd){
+  const segs=buildTimelineSegs(nowMs,phase,remMs,owner,r,evEnd);
   const tlRange=evEnd-nowMs;
   const px=ms=>`${Math.max(0,Math.min(100,(ms-nowMs)/tlRange*100)).toFixed(2)}%`;
   const pw=(a,b)=>`${Math.max(0,Math.min((b-a)/tlRange*100,100)).toFixed(2)}%`;
-  const dsegs=getSegments(nowMs,phase,remMs,owner,Math.min(r.window.start,evEnd));
-  if(r.window.start<evEnd)dsegs.push({type:'inactive',start:r.window.start,end:Math.min(r.xyzBattle,evEnd)});
-  if(r.xyzBattle<evEnd)dsegs.push({type:'battle',start:r.xyzBattle,end:Math.min(r.xyzCap,evEnd),color:C.gold});
-  if(r.xyzCap<evEnd)dsegs.push({type:'active',color:C.amber,start:r.xyzCap,end:evEnd});
-  dsegs.forEach(s=>{if(s.end<=nowMs||s.start>=evEnd)return;const el=document.createElement('div');el.className='tl-seg';el.style.left=px(s.start);el.style.width=pw(s.start,Math.min(s.end,evEnd));if(s.type==='inactive')el.style.background='repeating-linear-gradient(135deg,#2e2e4a 0,#2e2e4a 4px,rgba(136,135,128,.4) 4px,rgba(136,135,128,.4) 8px)';else{el.style.background=s.color||C.blue;el.style.opacity='0.85';}bar.appendChild(el);});
-  [{l:'left:calc(100% - 2px)',c:C.red},{l:'left:0',c:'#666688'}].forEach(({l,c})=>{const m=document.createElement('div');m.className='tl-marker';m.style.cssText=`${l};background:${c};`;bar.appendChild(m);});
-  if(evStart>nowMs&&evStart<evEnd){const lp=(evStart-nowMs)/tlRange*100;const m=document.createElement('div');m.className='tl-marker';m.style.cssText=`left:${lp.toFixed(2)}%;background:${C.green};`;bar.appendChild(m);}
-  const ticks=[{t:nowMs,l:'now'},{t:r.window.start,l:'vuln'},{t:r.xyzBattle,l:'⚔'},{t:evStart,l:'🏁'},{t:evEnd,l:'🎯'}];
+  segs.forEach(s=>{
+    if(s.end<=nowMs||s.start>=evEnd)return;
+    const el=document.createElement('div');el.className='dtl-seg';
+    el.style.left=px(s.start);el.style.width=pw(s.start,Math.min(s.end,evEnd));
+    if(s.type==='inactive') el.style.background='repeating-linear-gradient(135deg,#2e2e4a 0,#2e2e4a 4px,rgba(136,135,128,.4) 4px,rgba(136,135,128,.4) 8px)';
+    else{el.style.background=s.color||C.blue;el.style.opacity='0.85';}
+    bar.appendChild(el);
+  });
+  [{l:'left:calc(100% - 2px)',c:C.red},{l:'left:0',c:'#666688'}].forEach(({l,c})=>{
+    const m=document.createElement('div');m.className='dtl-marker';m.style.cssText=`${l};background:${c};`;bar.appendChild(m);
+  });
+  if(evStart>nowMs&&evStart<evEnd){const lp=(evStart-nowMs)/tlRange*100;const m=document.createElement('div');m.className='dtl-marker';m.style.cssText=`left:${lp.toFixed(2)}%;background:${C.green};`;bar.appendChild(m);}
+  const ticks=[{t:nowMs,l:'now'},{t:r.window?.start,l:'vuln'},{t:r.xyzBattle,l:'⚔'},{t:evStart,l:'🏁'},{t:evEnd,l:'🎯'}];
   if(r.xyzCap>nowMs&&r.xyzCap<evEnd)ticks.push({t:r.xyzCap,l:`${desired}✓`});
+  // Add reset ticks
+  if(r.resetWindows){r.resetWindows.forEach((rw,i)=>{if(i<3)ticks.push({t:rw.start,l:`⚡${i+1}`});});}
   ticks.sort((a,b)=>a.t-b.t);const placed=[];
-  ticks.forEach(({t,l})=>{const lp=(t-nowMs)/tlRange*100;if(lp<0||lp>100)return;if(placed.some(p=>Math.abs(p-lp)<8))return;placed.push(lp);const el=document.createElement('div');el.className='tl-tick';el.style.left=lp.toFixed(1)+'%';el.textContent=l;lblRow.appendChild(el);});
-}
-
-function buildSteps(nowMs,phase,remMs,owner,desired,r,evStart,evEnd){
-  const steps=[];let n=1;
-  const add=(obj,ph)=>steps.push({n:n++,phase:ph,...obj});
-  if(phase==='vulnerable'){add({color:C.gold,title:'Facility is currently VULNERABLE',time:nowMs,note:`${owner} has no exclusive hold. Window: now – ${fmt(nowMs+remMs)} (${dur(remMs)} remaining).`},'setup');}
-  else{add({color:C.blue,title:`${owner} holds the facility`,time:nowMs,note:`Active timer: ${humanDur(remMs)} remaining. Expires ${fmt(nowMs+remMs)}.`},'setup');}
-  if(!r.window)return steps;
-  const{xyzBattle,xyzCap,xyzExp,window:win,waitInWindow}=r;
-  const sameTime=Math.abs(xyzExp-evEnd)<60000;
-  const alreadyInWindow=phase==='vulnerable'&&win.start<=nowMs;
-  if(!alreadyInWindow){
-    const allSegs=getSegments(nowMs,phase,remMs,owner,win.start+H24+H72);
-    for(const seg of allSegs){
-      if(seg.start>=win.start)break;
-      if(seg.type==='inactive'&&seg.start>nowMs){
-        add({color:C.gray,title:`${owner}'s 72h timer expires — vulnerable window`,time:seg.start,note:`24h: ${fmt(seg.start)} – ${fmt(seg.start+H24)}.`},'cycle');
-        add({color:C.blue,title:`${owner} reclaims — option A`,time:seg.start,note:`Occupy 20 min → 72h restarts at ${fmt(seg.start+M20)}.`,isOptA:true},'cycle');
-        add({color:C.lblue,title:`${owner} reclaims — option B (auto)`,time:seg.start+H24,note:`Auto-returns to ${owner} (previous holder) after 24h.`,isOptB:true},'cycle');
-      } else if(seg.type==='active'&&seg.start>nowMs){
-        add({color:C.blue,title:`${owner} holds for 72 hours`,time:seg.start,note:`Expires ${fmt(seg.start+H72)}.`},'cycle');
-      }
-    }
-    add({color:C.gray,title:`${owner}'s 72h expires — target window opens`,time:win.start,note:`Window: ${fmt(win.start)} – ${fmt(win.end)}.`},'attack');
-  }
-  if(waitInWindow>60000){add({color:C.gray,title:`${desired} waits within the vulnerable window`,time:win.start,note:`Wait ${dur(waitInWindow)} until ${fmt(xyzBattle)} — timer aligns to expire at event end.`,isWait:true},'attack');}
-  add({color:C.gold,title:`${desired}: start 20-min occupation`,time:xyzBattle,note:`${desired} occupies uncontested. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`,darkText:true},'attack');
-  add({color:C.amber,title:`${desired} captures — 72h timer starts`,time:xyzCap,note:`Timer expires ${fmt(xyzExp)}${sameTime?' (= event end)':` (+${dur(r.extra)})`}.`,darkText:true},'attack');
-  const missedStart=xyzCap>evStart;
-  add({color:C.green,title:`Event starts`,time:evStart,note:missedStart?`⚠ ${desired} captured ${dur(xyzCap-evStart)} AFTER event start — gap!`:`${desired} already holds. Full coverage ✓`,highlight:missedStart},'event');
-  add({color:C.red,highlight:true,title:`Event end — ${desired} holds`,time:evEnd,note:sameTime?'Timer expires now.':` ${desired} holds with ${dur(xyzExp-evEnd)} remaining ✓`},'event');
-  if(!sameTime)add({color:C.gray,title:`${desired}'s 72h timer expires`,time:xyzExp,note:`Vulnerable phase begins. Ends ${fmt(xyzExp+H24)}.`},'post');
-  const inStart=sameTime?evEnd:xyzExp;
-  add({color:C.blue,title:`${owner} reclaims — option A (recommended!)`,time:inStart,note:`Occupy 20 min → 72h restarts at ${fmt(inStart+M20)}. Do this ASAP!`,isOptA:true},'post');
-  add({color:C.amber,title:`${desired} reclaims — option B (auto, 24h)`,time:inStart+H24,note:`If nobody acts: auto-returns to ${desired} — NOT ${owner}! Must use option A.`,isOptB:true,warnOpt:true},'post');
-  return steps;
+  ticks.forEach(({t,l})=>{if(!t)return;const lp=(t-nowMs)/tlRange*100;if(lp<0||lp>100)return;if(placed.some(p=>Math.abs(p-lp)<8))return;placed.push(lp);const el=document.createElement('div');el.className='dtl-tick';el.style.left=lp.toFixed(1)+'%';el.textContent=l;lblRow.appendChild(el);});
 }
 
 function renderSteps(steps,container){
-  const PH={cycle:'INTERMEDIATE CYCLES',attack:'TRANSFER',event:'EVENT',post:'POST-EVENT'};
+  const PH={reset:'⚡ INTERMEDIATE RESETS',attack:'HANDOVER TO '+' ',event:'EVENT',post:'POST-EVENT'};
   let lastP=null;
   steps.forEach(s=>{
-    if(s.phase&&s.phase!=='setup'&&s.phase!==lastP&&PH[s.phase]){const h=document.createElement('div');h.className='phase-header';h.textContent=PH[s.phase];container.appendChild(h);lastP=s.phase;}
-    const isOpt=s.isOptA||s.isOptB,isWait=s.isWait;
-    const el=document.createElement('div');el.className='step'+(isOpt?' opt':'');
-    el.style.background=s.highlight?'rgba(226,75,74,0.12)':isOpt?'transparent':'var(--bg1)';
-    const bc=s.warnOpt?C.amber:s.color;
+    if(s.phase&&s.phase!=='setup'&&s.phase!==lastP){
+      const label=s.phase==='attack'?`🏳 HANDOVER`:s.phase==='reset'?'⚡ INTERMEDIATE RESETS':s.phase==='event'?'📅 EVENT':s.phase==='post'?'POST-EVENT':'';
+      if(label){const h=document.createElement('div');h.className='phase-header';h.textContent=label;container.appendChild(h);lastP=s.phase;}
+    }
+    const isOpt=s.isOptA||s.isOptB,isWait=s.isWait,isReset=s.isReset;
+    const el=document.createElement('div');
+    el.className='step'+(isOpt?' opt':'')+(isReset?' reset-step':'');
+    el.style.background=s.highlight?'rgba(226,75,74,0.12)':isReset?'rgba(155,89,182,0.08)':isOpt?'transparent':'var(--bg1)';
+    const bc=s.warnOpt?C.amber:isReset?C.purple:s.color;
     el.style.borderLeft=`${isOpt||isWait?'2':'3'}px ${isOpt?'dashed':isWait?'dotted':'solid'} ${bc}`;
+    if(isOpt)el.style.marginLeft='22px';
     const bub=document.createElement('div');bub.className='bubble';
     if(isOpt)bub.style.cssText=`background:transparent;border:1.5px solid ${bc};color:${bc};`;
     else if(isWait)bub.style.cssText=`background:transparent;border:1.5px dotted ${s.color};color:${s.color};font-size:16px;`;
-    else{bub.style.background=s.color;bub.style.color=(s.darkText||s.color===C.gold||s.color===C.amber)?'#111':'#fff';}
-    bub.textContent=s.isOptA?'A':s.isOptB?'B':isWait?'…':s.n;
+    else{bub.style.background=isReset?C.purple:s.color;bub.style.color=(s.darkText||s.color===C.gold||s.color===C.amber)?'#111':'#fff';}
+    bub.textContent=s.isOptA?'A':s.isOptB?'B':isWait?'…':isReset?'⚡':s.n;
     const body=document.createElement('div');body.style.flex='1';
     const top=document.createElement('div');top.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;';
     const title=document.createElement('span');title.className='step-title';title.textContent=s.title;
@@ -700,142 +780,71 @@ function renderSteps(steps,container){
 }
 
 // ══════════════════════════════════════════════
-// FORM MODAL
+// FORM
 // ══════════════════════════════════════════════
-function setDefaultDate(){
-  const d=new Date(),dts=(6-d.getUTCDay()+7)%7||7;
-  d.setUTCDate(d.getUTCDate()+dts);
-  document.getElementById('f-event-date').value=d.toISOString().slice(0,10);
-  updateEventHint();
-}
-
-function onEventTypeChange(){
-  const type=document.getElementById('f-event-type').value;
-  document.getElementById('f-date-wrap').style.display=type==='custom'?'none':'';
-  document.getElementById('f-custom-wrap').style.display=type==='custom'?'':'none';
-  updateEventHint();
-}
+function setDefaultDate(){const d=new Date(),dts=(6-d.getUTCDay()+7)%7||7;d.setUTCDate(d.getUTCDate()+dts);document.getElementById('f-event-date').value=d.toISOString().slice(0,10);updateEventHint();}
+function onEventTypeChange(){const t=document.getElementById('f-event-type').value;document.getElementById('f-event-date').style.display=t==='custom'?'none':'';document.getElementById('f-custom-wrap').style.display=t==='custom'?'':'none';updateEventHint();}
 function onEventDateChange(){updateEventHint();}
 function updateEventHint(){
-  const type=document.getElementById('f-event-type').value;
-  const hint=document.getElementById('f-event-hint');
-  if(type==='custom'){hint.textContent='';return;}
-  const dateStr=document.getElementById('f-event-date').value;
-  if(!dateStr){hint.textContent='';return;}
-  const preset=EVENT_PRESETS[type];
-  const evStart=new Date(dateStr+'T'+String(preset.startH).padStart(2,'0')+':00:00Z').getTime();
-  const evEnd=new Date(dateStr+'T'+String(preset.endH).padStart(2,'0')+':00:00Z').getTime();
-  hint.textContent=`${fmt(evStart)} → ${fmt(evEnd)}`;
+  const t=document.getElementById('f-event-type').value;const hint=document.getElementById('f-event-hint');
+  if(t==='custom'){hint.textContent='';return;}
+  const d=document.getElementById('f-event-date').value;if(!d){hint.textContent='';return;}
+  const p=EVENT_PRESETS[t];
+  const s=new Date(d+'T'+String(p.startH).padStart(2,'0')+':00:00Z').getTime();
+  const e=new Date(d+'T'+String(p.endH).padStart(2,'0')+':00:00Z').getTime();
+  hint.textContent=`${fmt(s)} → ${fmt(e)}`;
 }
+function onModalPhaseToggle(){const v=document.getElementById('f-phase').checked;document.getElementById('f-rem-label').textContent=v?'Remaining Vulnerable Time (d:hh:mm)':'Remaining Active Time (d:hh:mm)';document.getElementById('m-lbl-active').style.fontWeight=v?'400':'700';document.getElementById('m-lbl-vuln').style.fontWeight=v?'700':'400';}
+function onModalRemInput(){const ms=parseTime(document.getElementById('f-rem').value);const h=document.getElementById('f-rem-hint');if(ms>0){const d=Math.floor(ms/86400000),hh=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);const p=[];if(d)p.push(d+'d');if(hh)p.push(hh+'h');if(m)p.push(m+'m');h.textContent='= '+p.join(' ');h.className='hint';}else{h.textContent='Invalid — use d:hh:mm';h.className='hint err';}}
 
 function openAddModal(){
-  document.getElementById('edit-id').value='';
-  document.getElementById('modal-title').textContent='Add Facility';
-  document.getElementById('f-name').value='';
-  document.getElementById('f-owner').value='ABC';
-  document.getElementById('f-desired').value='XYZ';
-  document.getElementById('f-phase').checked=false;
-  document.getElementById('f-rem').value='2:03:00';
-  document.getElementById('f-rem-hint').textContent='= 2 days 3 hours 0 minutes';
-  document.getElementById('f-rem-label').textContent='Remaining Active Time (d:hh:mm)';
-  document.getElementById('m-lbl-active').style.fontWeight='700';
-  document.getElementById('m-lbl-vuln').style.fontWeight='400';
-  document.getElementById('f-event-type').value='sunfire';
-  onEventTypeChange();
-  setDefaultDate();
-  document.getElementById('form-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('f-name').focus(),100);
+  document.getElementById('edit-id').value='';document.getElementById('modal-title').textContent='Add Facility';
+  document.getElementById('f-name').value='';document.getElementById('f-owner').value='ABC';document.getElementById('f-desired').value='XYZ';
+  document.getElementById('f-phase').checked=false;document.getElementById('f-rem').value='2:03:00';document.getElementById('f-rem-hint').textContent='= 2 days 3 hours 0 minutes';
+  document.getElementById('f-rem-label').textContent='Remaining Active Time (d:hh:mm)';document.getElementById('m-lbl-active').style.fontWeight='700';document.getElementById('m-lbl-vuln').style.fontWeight='400';
+  document.getElementById('f-event-type').value='sunfire';onEventTypeChange();setDefaultDate();
+  document.getElementById('form-modal').classList.add('open');setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
-
 function openEditModal(id){
   const fac=facilities.find(f=>f.id===id);if(!fac)return;
-  const nowMs=Date.now();
-  const expiresAt=new Date(fac.expires_at).getTime();
-  const remMs=Math.max(0,expiresAt-nowMs);
-  const totalMin=Math.floor(remMs/60000);
-  const d2=Math.floor(totalMin/1440),h=Math.floor((totalMin%1440)/60),m=totalMin%60;
-  const z=n=>String(n).padStart(2,'0');
-  document.getElementById('edit-id').value=id;
-  document.getElementById('modal-title').textContent='Edit Facility';
-  document.getElementById('f-name').value=fac.name;
-  document.getElementById('f-owner').value=fac.owner;
-  document.getElementById('f-desired').value=fac.desired;
-  document.getElementById('f-phase').checked=fac.phase==='vulnerable';
-  document.getElementById('f-rem').value=`${d2}:${z(h)}:${z(m)}`;
+  const nowMs=Date.now();const expiresAt=new Date(fac.expires_at).getTime();const remMs=Math.max(0,expiresAt-nowMs);
+  const tot=Math.floor(remMs/60000);const d=Math.floor(tot/1440),h=Math.floor((tot%1440)/60),m=tot%60;const z=n=>String(n).padStart(2,'0');
+  document.getElementById('edit-id').value=id;document.getElementById('modal-title').textContent='Edit Facility';
+  document.getElementById('f-name').value=fac.name;document.getElementById('f-owner').value=fac.owner;document.getElementById('f-desired').value=fac.desired;
+  document.getElementById('f-phase').checked=fac.phase==='vulnerable';document.getElementById('f-rem').value=`${d}:${z(h)}:${z(m)}`;
   document.getElementById('f-rem-label').textContent=fac.phase==='vulnerable'?'Remaining Vulnerable Time (d:hh:mm)':'Remaining Active Time (d:hh:mm)';
-  document.getElementById('m-lbl-active').style.fontWeight=fac.phase==='vulnerable'?'400':'700';
-  document.getElementById('m-lbl-vuln').style.fontWeight=fac.phase==='vulnerable'?'700':'400';
+  document.getElementById('m-lbl-active').style.fontWeight=fac.phase==='vulnerable'?'400':'700';document.getElementById('m-lbl-vuln').style.fontWeight=fac.phase==='vulnerable'?'700':'400';
   onModalRemInput();
-  const eventType=fac.event_type||'custom';
-  document.getElementById('f-event-type').value=eventType;
-  if(eventType!=='custom'&&fac.event_end){
-    document.getElementById('f-event-date').value=new Date(fac.event_end).toISOString().slice(0,10);
-  } else {
-    if(fac.event_start)document.getElementById('f-evstart').value=new Date(fac.event_start).toISOString().slice(0,16);
-    if(fac.event_end)document.getElementById('f-evend').value=new Date(fac.event_end).toISOString().slice(0,16);
-  }
-  onEventTypeChange();
-  document.getElementById('form-modal').classList.add('open');
+  const et=fac.event_type||'custom';document.getElementById('f-event-type').value=et;
+  if(et!=='custom'&&fac.event_end){document.getElementById('f-event-date').value=new Date(fac.event_end).toISOString().slice(0,10);}
+  else{if(fac.event_start)document.getElementById('f-evstart').value=new Date(fac.event_start).toISOString().slice(0,16);if(fac.event_end)document.getElementById('f-evend').value=new Date(fac.event_end).toISOString().slice(0,16);}
+  onEventTypeChange();document.getElementById('form-modal').classList.add('open');
 }
 function closeFormModal(){document.getElementById('form-modal').classList.remove('open');}
 
-function onModalPhaseToggle(){
-  const v=document.getElementById('f-phase').checked;
-  document.getElementById('f-rem-label').textContent=v?'Remaining Vulnerable Time (d:hh:mm)':'Remaining Active Time (d:hh:mm)';
-  document.getElementById('m-lbl-active').style.fontWeight=v?'400':'700';
-  document.getElementById('m-lbl-vuln').style.fontWeight=v?'700':'400';
-}
-function onModalRemInput(){
-  const ms=parseTime(document.getElementById('f-rem').value);
-  const hint=document.getElementById('f-rem-hint');
-  if(ms>0){const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);const p=[];if(d)p.push(d+'d');if(h)p.push(h+'h');if(m)p.push(m+'m');hint.textContent='= '+p.join(' ');hint.className='hint';}
-  else{hint.textContent='Invalid — use d:hh:mm e.g. 2:03:00';hint.className='hint err';}
-}
-
 async function saveFacility(){
-  const name=document.getElementById('f-name').value.trim();
-  const owner=document.getElementById('f-owner').value.trim();
-  const desired=document.getElementById('f-desired').value.trim();
-  const phase=document.getElementById('f-phase').checked?'vulnerable':'active';
-  const remMs=parseTime(document.getElementById('f-rem').value);
-  const eventType=document.getElementById('f-event-type').value;
+  const name=document.getElementById('f-name').value.trim();const owner=document.getElementById('f-owner').value.trim();const desired=document.getElementById('f-desired').value.trim();
+  const phase=document.getElementById('f-phase').checked?'vulnerable':'active';const remMs=parseTime(document.getElementById('f-rem').value);const eventType=document.getElementById('f-event-type').value;
   if(!name||!owner||!desired||!remMs){alert('Please fill in all fields.');return;}
   let evStart,evEnd;
-  if(eventType==='custom'){
-    const ss=document.getElementById('f-evstart').value;
-    const es=document.getElementById('f-evend').value;
-    if(!ss||!es){alert('Please set event start and end times.');return;}
-    evStart=new Date(ss+':00Z').getTime();evEnd=new Date(es+':00Z').getTime();
-    if(evEnd<=evStart){alert('Event end must be after event start.');return;}
-  } else {
-    const dateStr=document.getElementById('f-event-date').value;
-    if(!dateStr){alert('Please select a date.');return;}
-    const preset=EVENT_PRESETS[eventType];
-    evStart=new Date(dateStr+'T'+String(preset.startH).padStart(2,'0')+':00:00Z').getTime();
-    evEnd=new Date(dateStr+'T'+String(preset.endH).padStart(2,'0')+':00:00Z').getTime();
-  }
+  if(eventType==='custom'){const ss=document.getElementById('f-evstart').value;const es=document.getElementById('f-evend').value;if(!ss||!es){alert('Set event start and end.');return;}evStart=new Date(ss+':00Z').getTime();evEnd=new Date(es+':00Z').getTime();if(evEnd<=evStart){alert('End must be after start.');return;}}
+  else{const d=document.getElementById('f-event-date').value;if(!d){alert('Select a date.');return;}const p=EVENT_PRESETS[eventType];evStart=new Date(d+'T'+String(p.startH).padStart(2,'0')+':00:00Z').getTime();evEnd=new Date(d+'T'+String(p.endH).padStart(2,'0')+':00:00Z').getTime();}
   if(evEnd<=Date.now()){alert('Event end must be in the future.');return;}
-  const expiresAt=new Date(Date.now()+remMs).toISOString();
-  const editId=document.getElementById('edit-id').value;
+  const expiresAt=new Date(Date.now()+remMs).toISOString();const editId=document.getElementById('edit-id').value;
   const btn=document.getElementById('save-btn');btn.textContent='Saving…';btn.disabled=true;
   const payload={name,owner,desired,phase,expires_at:expiresAt,event_start:new Date(evStart).toISOString(),event_end:new Date(evEnd).toISOString(),event_type:eventType,updated_at:new Date().toISOString()};
   let error;
-  if(editId){({error}=await sb.from('facilities').update(payload).eq('id',editId));}
-  else{({error}=await sb.from('facilities').insert(payload));}
+  if(editId)({error}=await sb.from('facilities').update(payload).eq('id',editId));
+  else({error}=await sb.from('facilities').insert(payload));
   btn.textContent='Save Facility';btn.disabled=false;
-  if(error){alert('Error saving: '+error.message);return;}
+  if(error){alert('Error: '+error.message);return;}
   closeFormModal();await loadFacilities();
 }
-
 async function deleteFacility(id){
-  const fac=facilities.find(f=>f.id===id);if(!fac)return;
-  if(!confirm(`Delete "${fac.name}"?`))return;
-  const{error}=await sb.from('facilities').delete().eq('id',id);
-  if(error){alert('Error: '+error.message);return;}
-  if(detailId===id)closeDetail();
-  await loadFacilities();
+  const fac=facilities.find(f=>f.id===id);if(!fac)return;if(!confirm(`Delete "${fac.name}"?`))return;
+  const{error}=await sb.from('facilities').delete().eq('id',id);if(error){alert('Error: '+error.message);return;}
+  if(detailId===id)closeDetail();await loadFacilities();
 }
-
 document.getElementById('form-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeFormModal();});
 document.getElementById('detail-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDetail();});
 </script>
