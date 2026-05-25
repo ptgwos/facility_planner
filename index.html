@@ -164,7 +164,7 @@ select option{background:var(--bg2);}
     <div><h1>❄️ Facility Dashboard</h1><p class="subtitle">Whiteout Survival · Alliance Facility Tracker</p></div>
     <div class="flex gap12">
       <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting…</span></div>
-      <button class="btn btn-primary" onclick="openAddModal()">+ Add Facility</button>
+      <button class="btn btn-primary" id="btn-add-facility" onclick="openAddModal()">+ Add Facility</button>
     </div>
   </div>
 
@@ -248,7 +248,7 @@ select option{background:var(--bg2);}
         <p id="detail-subtitle" style="font-size:12px;color:var(--txt2);margin-top:3px;"></p>
       </div>
       <div class="flex gap8">
-        <button class="btn btn-ghost btn-sm" onclick="editFromDetail()">✏️ Edit</button>
+        <span id="detail-edit-btn"></span>
         <button class="btn btn-ghost btn-sm" onclick="closeDetail()">✕</button>
       </div>
     </div>
@@ -260,7 +260,7 @@ select option{background:var(--bg2);}
 // ══════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════
-const SITE_PASSWORD = "snowstorm";
+const PASSWORDS = { admin: "646!rules", viewer: "frostbite" };
 const SUPABASE_URL = "https://frrctfpsfxhysokgdqkt.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZycmN0ZnBzZnhoeXNva2dkcWt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDg1NzEsImV4cCI6MjA5NTI4NDU3MX0.AZ9yqiwQ9VkBQZZFTeeZ8DH9O3693ytoZOcvURDif0s";
 
@@ -331,14 +331,17 @@ function calcFacility(fac){
 // AUTH
 // ══════════════════════════════════════════════
 function tryLogin(){
-  const v=document.getElementById('pw-input').value;
-  if(v===SITE_PASSWORD){sessionStorage.setItem('ftp_auth',SITE_PASSWORD);document.getElementById('login-screen').style.display='none';document.getElementById('app-root').style.display='';initApp();}
-  else{const e=document.getElementById('pw-error');e.textContent='Wrong password.';e.style.display='';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
+  const v=document.getElementById("pw-input").value;
+  if(v===PASSWORDS.admin){sessionStorage.setItem("ftp_auth","admin");document.getElementById("login-screen").style.display="none";document.getElementById("app-root").style.display="";initApp();}
+  else if(v===PASSWORDS.viewer){sessionStorage.setItem("ftp_auth","viewer");document.getElementById("login-screen").style.display="none";document.getElementById("app-root").style.display="";initApp();}
+  else{const e=document.getElementById("pw-error");e.textContent="Wrong password.";e.style.display="";document.getElementById("pw-input").value="";document.getElementById("pw-input").focus();}
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  if(sessionStorage.getItem('ftp_auth')===SITE_PASSWORD){document.getElementById('app-root').style.display='';initApp();}
-  else{document.getElementById('login-screen').style.display='flex';}
-  document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+function isAdmin(){return sessionStorage.getItem("ftp_auth")==="admin";}
+document.addEventListener("DOMContentLoaded",()=>{
+  const role=sessionStorage.getItem("ftp_auth");
+  if(role==="admin"||role==="viewer"){document.getElementById("app-root").style.display="";initApp();}
+  else{document.getElementById("login-screen").style.display="flex";}
+  document.getElementById("pw-input").addEventListener("keydown",e=>{if(e.key==="Enter")tryLogin();});
 });
 
 // ══════════════════════════════════════════════
@@ -347,6 +350,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 let sb, facilities=[], detailId=null, sortMode='time';
 
 async function initApp(){
+  // Show/hide admin-only UI
+  if(!isAdmin()){
+    const btn=document.getElementById('btn-add-facility');
+    if(btn)btn.style.display='none';
+  }
+
   sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   setSyncStatus(false);
   await loadFacilities();
@@ -534,8 +543,7 @@ function makeCard(fac){
     <div class="fac-footer">
       <span style="font-size:10px;color:var(--txt2);flex:1;">${escHtml(fac.owner)} until: <span style="font-family:var(--mono);">${r.type==='inactive_window'?fmt(r.window.start).split(' ').slice(0,3).join(' '):'—'}</span></span>
       <button class="btn btn-ghost btn-sm" onclick="openDetail('${fac.id}')">Details</button>
-      <button class="btn btn-ghost btn-sm" onclick="openEditModal('${fac.id}')">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteFacility('${fac.id}')">🗑</button>
+      ${isAdmin()?`<button class="btn btn-ghost btn-sm" onclick="openEditModal('${fac.id}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteFacility('${fac.id}')">🗑</button>`:''}
     </div>`;
   return card;
 }
@@ -549,6 +557,8 @@ function openDetail(id){
   const{evStart,evEnd}=calcFacility(fac);
   document.getElementById('detail-subtitle').textContent=`${fac.owner} → ${fac.desired}  ·  ${fmt(evStart)} – ${fmt(evEnd)}`;
   renderDetail(fac);
+  const des=document.getElementById('detail-edit-btn');
+  if(des)des.innerHTML=isAdmin()?'<button class="btn btn-ghost btn-sm" onclick="editFromDetail()">✏️ Edit</button>':'';
   document.getElementById('detail-modal').classList.add('open');
 }
 function closeDetail(){document.getElementById('detail-modal').classList.remove('open');detailId=null;}
