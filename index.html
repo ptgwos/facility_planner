@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Facility Timing Planner — Whiteout Survival</title>
+<style>
+  :root {
+    --bg0: #0e0e14;
+    --bg1: #1a1a26;
+    --bg2: #22223a;
+    --bg3: #2e2e4a;
+    --txt1: #e8e8f0;
+    --txt2: #8888aa;
+    --border: #33334a;
+    --border2: #44446a;
+    --blue: #378ADD;
+    --amber: #EF9F27;
+    --gold: #F0C040;
+    --red: #E24B4A;
+    --gray: #888780;
+    --lblue: #7aadd4;
+    --green: #22AA66;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'Consolas', 'Cascadia Code', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg0); color: var(--txt1); font-family: var(--font); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+  body { padding: 24px 16px; }
+  .container { max-width: 820px; margin: 0 auto; }
+
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--txt2); margin-bottom: 24px; }
+
+  .label { font-size: 11px; color: var(--txt2); display: block; margin-bottom: 5px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+  .card { background: var(--bg1); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .card + .card { margin-top: 0; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  @media(max-width:600px){ .grid2,.grid3 { grid-template-columns: 1fr; } }
+
+  input[type=text], input[type=datetime-local] {
+    border: 1px solid var(--border2); border-radius: 8px; padding: 8px 10px;
+    font-size: 13px; background: var(--bg2); color: var(--txt1);
+    width: 100%; outline: none; font-family: var(--font);
+    transition: border-color .15s;
+  }
+  input[type=text]:focus, input[type=datetime-local]:focus { border-color: var(--blue); }
+  input.mono { font-family: var(--mono); }
+  input[type=datetime-local]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+  .section-head { font-size: 10px; font-weight: 600; color: var(--txt2); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+
+  /* Toggle */
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+  .toggle-label { font-size: 12px; font-weight: 500; }
+  .toggle { position: relative; width: 52px; height: 26px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .slider { position: absolute; inset: 0; border-radius: 13px; background: var(--bg3); border: 1px solid var(--border2); cursor: pointer; transition: background .2s; }
+  .slider:before { content:''; position:absolute; width:20px; height:20px; left:2px; top:2px; border-radius:50%; background:#fff; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.5); }
+  .toggle input:checked + .slider { background: var(--amber); border-color: var(--amber); }
+  .toggle input:checked + .slider:before { transform: translateX(26px); }
+
+  /* Info boxes */
+  .info-box { font-size: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 10px; line-height: 1.6; }
+
+  /* Coverage bar */
+  .cov-wrap { height: 12px; border-radius: 6px; background: var(--bg2); overflow: hidden; position: relative; border: 1px solid var(--border); }
+  .cov-fill { height: 100%; position: absolute; top: 0; }
+
+  /* Timeline */
+  .tl-wrap { position: relative; height: 46px; border-radius: 8px; overflow: hidden; background: var(--bg2); border: 1px solid var(--border); }
+  .tl-seg { position: absolute; top: 0; bottom: 0; }
+  .tl-marker { position: absolute; top: 0; bottom: 0; width: 2px; z-index: 5; }
+  .tl-label-row { position: relative; height: 20px; margin-bottom: 16px; }
+  .tl-tick { position: absolute; font-size: 10px; color: var(--txt2); transform: translateX(-50%); white-space: nowrap; font-family: var(--mono); }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+  /* Steps */
+  .phase-header { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--txt2); margin: 16px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .step { display: flex; gap: 10px; margin-bottom: 6px; padding: 10px 14px; border-radius: 10px; align-items: flex-start; background: var(--bg1); }
+  .step.opt { background: transparent; margin-left: 22px; }
+  .step-title { font-size: 13px; font-weight: 500; }
+  .step-note { font-size: 12px; color: var(--txt2); margin: 4px 0 0; line-height: 1.5; }
+  .step-time { font-size: 11px; color: var(--txt2); font-family: var(--mono); background: var(--bg3); padding: 2px 8px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+  .bubble { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+  /* Metrics */
+  .metric { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .metric-label { font-size: 11px; color: var(--txt2); margin-bottom: 4px; }
+  .metric-val { font-size: 13px; font-weight: 600; font-family: var(--mono); }
+
+  /* Hint text */
+  .hint { font-size: 11px; color: var(--txt2); margin-top: 5px; }
+  .hint.err { color: var(--red); }
+
+  /* Spacing helpers */
+  .mb8 { margin-bottom: 8px; }
+  .mb12 { margin-bottom: 12px; }
+  .mb16 { margin-bottom: 16px; }
+  .mb24 { margin-bottom: 24px; }
+  .mt8 { margin-top: 8px; }
+  .mt10 { margin-top: 10px; }
+
+  /* Hatching for vulnerable/inactive — explicit SVG background */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 4px,
+      rgba(136,135,128,0.35) 4px,
+      rgba(136,135,128,0.35) 8px
+    );
+    background-color: var(--bg3);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Facility Timing Planner</h1>
+  <p class="subtitle">Whiteout Survival · Alliance Facility Scheduler</p>
+
+  <!-- Facility name -->
+  <div class="card mb12">
+    <span class="label">Facility Name</span>
+    <input type="text" id="facname" value="Bear's Sanctuary" oninput="calc()" placeholder="e.g. Bear's Sanctuary"/>
+  </div>
+
+  <div class="grid2 mb12">
+    <div class="card">
+      <p class="section-head">Current State</p>
+      <span class="label">Current Owner (Alliance)</span>
+      <input type="text" id="owner" value="ABC" oninput="calc()" class="mb8"/>
+
+      <span class="label mt10">Current Phase</span>
+      <div class="toggle-wrap mb8">
+        <span class="toggle-label" id="lbl-active" style="font-weight:700;">Active (72h)</span>
+        <label class="toggle">
+          <input type="checkbox" id="phase-toggle" onchange="onPhaseToggle()"/>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label" id="lbl-vuln" style="color:var(--amber);">Vulnerable (24h)</span>
+      </div>
+
+      <span class="label" id="rem-label">Remaining Active Time (d:hh:mm)</span>
+      <input type="text" id="rem" value="2:03:00" class="mono" oninput="onRemInput()" placeholder="d:hh:mm e.g. 2:03:00"/>
+      <p class="hint" id="rem-hint">= 2 days 3 hours 0 minutes</p>
+    </div>
+    <div class="card">
+      <p class="section-head">Goal</p>
+      <span class="label">Desired Owner (Mega-Alliance)</span>
+      <input type="text" id="desired" value="XYZ" oninput="calc()" class="mb8"/>
+
+      <span class="label">Event End (UTC) — Event: 10:00–22:00 UTC</span>
+      <input type="datetime-local" id="evend" oninput="onEvEndInput()"/>
+      <p class="hint" id="evstart-hint"></p>
+    </div>
+  </div>
+
+  <div id="output" style="display:none;">
+    <div id="warn-box"></div>
+    <div id="strategy-box"></div>
+
+    <!-- Coverage bar -->
+    <div id="cov-section" class="mb16" style="display:none;">
+      <p class="section-head mb8">Event Coverage</p>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:6px;">
+        <span id="cov-start-lbl" style="font-family:var(--mono);">10:00 UTC</span>
+        <span id="cov-pct" style="font-weight:700;"></span>
+        <span id="cov-end-lbl" style="font-family:var(--mono);">22:00 UTC</span>
+      </div>
+      <div class="cov-wrap mb8">
+        <div class="cov-fill" id="cov-fill-abc"></div>
+        <div class="cov-fill" id="cov-fill-xyz"></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--txt2);">
+        <span><span class="legend-dot" style="background:var(--blue);opacity:.7;"></span><span id="cov-leg-abc">ABC</span></span>
+        <span><span class="legend-dot" style="background:var(--amber);"></span><span id="cov-leg-xyz">XYZ</span></span>
+        <span><span class="legend-dot" style="background:var(--bg2);border:1px solid var(--border2);"></span>Uncovered</span>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <p class="section-head mb8" id="tl-title">Timeline</p>
+    <div class="tl-wrap" id="tl-bar"></div>
+    <div class="tl-label-row" id="tl-labels"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;font-size:11px;color:var(--txt2);">
+      <span><span class="legend-dot" style="background:var(--blue);"></span><span id="leg-owner">ABC</span></span>
+      <span><span class="legend-dot" style="background:var(--amber);"></span><span id="leg-desired">XYZ</span></span>
+      <span><span class="legend-dot" style="background:var(--gold);"></span>Occupation (20 min)</span>
+      <span><span class="legend-dot hatch"></span>Vulnerable (24h)</span>
+      <span><span class="legend-dot" style="background:var(--green);"></span>Event start</span>
+      <span><span class="legend-dot" style="background:var(--red);"></span>Event end</span>
+    </div>
+
+    <!-- Action plan -->
+    <p class="section-head mb8">Action Plan</p>
+    <div id="steps"></div>
+
+    <div class="grid3" style="margin-top:16px;">
+      <div class="metric"><p class="metric-label"><span id="m1-lbl">ABC</span> holds until</p><p class="metric-val" id="m1-val">—</p></div>
+      <div class="metric"><p class="metric-label">XYZ timer expires</p><p class="metric-val" id="m2-val">—</p></div>
+      <div class="metric"><p class="metric-label"><span id="m3-lbl">ABC</span> reclaims (opt. A)</p><p class="metric-val" id="m3-val">—</p></div>
+    </div>
+  </div>
+  <div id="no-input" style="font-size:13px;color:var(--txt2);padding:12px 0;">Enter valid inputs above to see the plan.</div>
+</div>
+
+<script>
+const M20=20*60*1000,H72=72*60*60*1000,H24=24*60*60*1000,H12=12*60*60*1000;
+const C={blue:'#378ADD',amber:'#EF9F27',gold:'#F0C040',red:'#E24B4A',gray:'#888780',lblue:'#7aadd4',green:'#22AA66',bg2:'#22223a',bg3:'#2e2e4a'};
+
+function parseTime(s){const p=s.trim().split(':').map(Number);if(p.some(isNaN)||p.some(n=>n<0))return 0;if(p.length===3)return(p[0]*24*3600+p[1]*3600+p[2]*60)*1000;if(p.length===2)return(p[0]*3600+p[1]*60)*1000;return 0;}
+function fmt(ms){const d=new Date(ms),z=n=>String(n).padStart(2,'0'),D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return`${D[d.getUTCDay()]} ${z(d.getUTCDate())}.${z(d.getUTCMonth()+1)}. ${z(d.getUTCHours())}:${z(d.getUTCMinutes())} UTC`;}
+function fmtTime(ms){const d=new Date(ms),z=n=>String(n).padStart(2,'0');return`${z(d.getUTCHours())}:${z(d.getUTCMinutes())} UTC`;}
+function dur(ms){if(ms<=0)return'<0';const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);return m?`${h}h ${m}m`:`${h}h`;}
+function humanDur(ms){const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);const p=[];if(d)p.push(d+'d');if(h)p.push(h+'h');if(m)p.push(m+'m');return p.join(' ')||'<1m';}
+
+function getSegments(nowMs,phase,remMs,owner,upTo){
+  const s=[];let t=nowMs;
+  if(phase==='vulnerable'){
+    const inEnd=nowMs+remMs;
+    s.push({type:'inactive',start:t,end:Math.min(inEnd,upTo)});t=inEnd;
+    if(t<upTo){s.push({type:'active',owner,start:t,end:Math.min(t+H72,upTo)});t+=H72;}
+  } else {
+    const actEnd=nowMs+remMs;
+    s.push({type:'active',owner,start:t,end:Math.min(actEnd,upTo)});t=actEnd;
+  }
+  while(t<upTo){
+    s.push({type:'inactive',start:t,end:Math.min(t+H24,upTo)});t+=H24;if(t>=upTo)break;
+    s.push({type:'active',owner,start:t,end:Math.min(t+H72,upTo)});t+=H72;
+  }
+  return s;
+}
+
+function findBestCapture(nowMs,phase,remMs,owner,evEnd){
+  const segs=getSegments(nowMs,phase,remMs,owner,evEnd+H72+H24*2);
+  const inactive=segs.filter(s=>s.type==='inactive');
+  const viable=inactive.filter(w=>w.end+H72>=evEnd&&w.start<evEnd);
+  if(viable.length===0){
+    const fa=segs.find(s=>s.type==='active');
+    if(fa&&fa.end>=evEnd)return{type:'impossible_abc_owns',exp:fa.end};
+    return{type:'impossible_no_window'};
+  }
+  const win=viable[viable.length-1];
+  const idealBattle=evEnd-H72-M20;
+  const xyzBattle=Math.max(win.start,Math.min(idealBattle,win.end-M20));
+  const xyzCap=xyzBattle+M20;
+  const xyzExp=xyzCap+H72;
+  return{type:'inactive_window',xyzBattle,xyzCap,xyzExp,window:win,extra:Math.max(0,xyzExp-evEnd),waitInWindow:xyzBattle-win.start};
+}
+
+function buildSteps(nowMs,phase,remMs,owner,desired,r,evStart,evEnd){
+  const steps=[];let n=1;
+  const add=(obj,ph)=>steps.push({n:n++,phase:ph,...obj});
+  if(phase==='vulnerable'){
+    add({color:C.gold,title:'Facility is currently VULNERABLE',time:nowMs,
+      note:`${owner} has no exclusive hold. Window: now – ${fmt(nowMs+remMs)} (${dur(remMs)} remaining).`},'setup');
+  } else {
+    add({color:C.blue,title:`${owner} holds the facility`,time:nowMs,
+      note:`Active timer: ${humanDur(remMs)} remaining. Expires ${fmt(nowMs+remMs)}.`},'setup');
+  }
+  if(!r.window)return steps;
+  const{xyzBattle,xyzCap,xyzExp,window:win,waitInWindow}=r;
+  const sameTime=Math.abs(xyzExp-evEnd)<60000;
+  const alreadyInWindow=phase==='vulnerable'&&win.start<=nowMs;
+  if(!alreadyInWindow){
+    const allSegs=getSegments(nowMs,phase,remMs,owner,win.start+H24+H72);
+    for(const seg of allSegs){
+      if(seg.start>=win.start)break;
+      if(seg.type==='inactive'&&seg.start>nowMs){
+        add({color:C.gray,title:`${owner}'s 72h timer expires — vulnerable window`,time:seg.start,
+          note:`24h vulnerable: ${fmt(seg.start)} – ${fmt(seg.start+H24)}.`},'cycle');
+        add({color:C.blue,title:`${owner} reclaims — option A (early)`,time:seg.start,
+          note:`${owner} occupies for 20 min → 72h restarts at ${fmt(seg.start+M20)}.`,isOptA:true},'cycle');
+        add({color:C.lblue,title:`${owner} reclaims — option B (auto, 24h)`,time:seg.start+H24,
+          note:`Auto-returns to ${owner} (previous holder) after 24h.`,isOptB:true},'cycle');
+      } else if(seg.type==='active'&&seg.start>nowMs){
+        add({color:C.blue,title:`${owner} holds for 72 hours`,time:seg.start,
+          note:`Active period. Expires ${fmt(seg.start+H72)}.`},'cycle');
+      }
+    }
+    add({color:C.gray,title:`${owner}'s 72h expires — target vulnerable window opens`,time:win.start,
+      note:`${desired} can now occupy. Window: ${fmt(win.start)} – ${fmt(win.end)}.`},'attack');
+  }
+  if(waitInWindow>60000){
+    add({color:C.gray,title:`${desired} waits within the vulnerable window`,time:win.start,
+      note:`Wait ${dur(waitInWindow)} until ${fmt(xyzBattle)} so the 72h timer aligns to expire as close to event end as possible.`,isWait:true},'attack');
+  }
+  add({color:C.gold,title:`${desired}: start 20-min occupation`,time:xyzBattle,
+    note:waitInWindow>60000
+      ?`${desired} occupies uncontested. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`
+      :`${desired} occupies at window opening. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`,
+    darkText:true},'attack');
+  add({color:C.amber,title:`${desired} captures — 72h timer starts`,time:xyzCap,
+    note:`Timer expires ${fmt(xyzExp)}${sameTime?' (= event end)':` (+${dur(r.extra)} after event end)`}.`,
+    darkText:true},'attack');
+  const missedStart=xyzCap>evStart;
+  add({color:C.green,title:`Event starts`,time:evStart,
+    note:missedStart
+      ?`⚠ ${desired} captured ${dur(xyzCap-evStart)} AFTER event start — ${dur(xyzCap-evStart)} of the event is uncovered!`
+      :`${desired} already holds the facility. Full coverage from event start ✓`,
+    highlight:missedStart},'event');
+  add({color:C.red,highlight:true,title:`Event end — ${desired} holds`,time:evEnd,
+    note:sameTime?`Timer expires now. Vulnerable phase begins immediately.`
+      :`${desired} holds with ${dur(xyzExp-evEnd)} remaining. Coverage ✓`},'event');
+  if(!sameTime){
+    add({color:C.gray,title:`${desired}'s 72h timer expires`,time:xyzExp,
+      note:`24h vulnerable phase begins. Ends ${fmt(xyzExp+H24)}.`},'post');
+  }
+  const inStart=sameTime?evEnd:xyzExp;
+  add({color:C.blue,title:`${owner} reclaims — option A (active, recommended)`,time:inStart,
+    note:`${owner} must occupy for 20 min → 72h restarts at ${fmt(inStart+M20)}. Do this ASAP!`,isOptA:true},'post');
+  add({color:C.amber,title:`${desired} reclaims — option B (auto, after 24h)`,time:inStart+H24,
+    note:`If nobody acts: facility auto-returns to ${desired} (previous holder) — NOT ${owner}! Use option A to reclaim.`,isOptB:true,warnOpt:true},'post');
+  return steps;
+}
+
+function defaultEnd(){
+  const d=new Date(),dts=(6-d.getUTCDay()+7)%7||7;
+  d.setUTCDate(d.getUTCDate()+dts);d.setUTCHours(22,0,0,0);
+  return d.toISOString().slice(0,16);
+}
+document.getElementById('evend').value=defaultEnd();
+
+function addBox(el,msg,color,strong){
+  const d=document.createElement('div');d.className='info-box';
+  d.style.cssText=`background:${color}22;border:${strong?'1.5px':'1px'} solid ${color}${strong?'':'88'};${strong?'font-weight:500;color:#fff;':'color:#ccc;'}`;
+  d.textContent=msg;el.appendChild(d);
+}
+
+function onRemInput(){
+  const ms=parseTime(document.getElementById('rem').value),hint=document.getElementById('rem-hint');
+  if(ms>0){
+    const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);
+    const p=[];if(d)p.push(d+(d===1?' day':' days'));if(h)p.push(h+(h===1?' hour':' hours'));if(m||(!d&&!h))p.push(m+(m===1?' min':' min'));
+    hint.textContent='= '+p.join(' ');hint.className='hint';
+  } else {
+    hint.textContent='Invalid format — use d:hh:mm e.g. 2:03:00 or 0:17:24';hint.className='hint err';
+  }
+  calc();
+}
+
+function onPhaseToggle(){
+  const v=document.getElementById('phase-toggle').checked;
+  document.getElementById('rem-label').textContent=v?'Remaining Vulnerable Time (d:hh:mm)':'Remaining Active Time (d:hh:mm)';
+  document.getElementById('lbl-active').style.fontWeight=v?'400':'700';
+  document.getElementById('lbl-vuln').style.fontWeight=v?'700':'400';
+  calc();
+}
+
+function onEvEndInput(){
+  const endStr=document.getElementById('evend').value;
+  if(endStr){
+    const evEnd=new Date(endStr+':00Z').getTime();
+    document.getElementById('evstart-hint').textContent=`Event starts: ${fmt(evEnd-H12)}`;
+  }
+  calc();
+}
+// Init
+(function(){const e=document.getElementById('evend').value;if(e){const ev=new Date(e+':00Z').getTime();document.getElementById('evstart-hint').textContent=`Event starts: ${fmt(ev-H12)}`;}})();
+
+function calc(){
+  const nowMs=Date.now();
+  const owner=document.getElementById('owner').value.trim()||'ABC';
+  const desired=document.getElementById('desired').value.trim()||'XYZ';
+  const facname=document.getElementById('facname').value.trim()||'Facility';
+  const phase=document.getElementById('phase-toggle').checked?'vulnerable':'active';
+  const remMs=parseTime(document.getElementById('rem').value);
+  const endStr=document.getElementById('evend').value;
+  const out=document.getElementById('output'),noIn=document.getElementById('no-input');
+  if(!remMs||!endStr){out.style.display='none';noIn.style.display='';noIn.textContent='Enter valid inputs above to see the plan.';return;}
+  const evEnd=new Date(endStr+':00Z').getTime();
+  if(isNaN(evEnd)||evEnd<=nowMs){out.style.display='none';noIn.style.display='';noIn.textContent='Event end must be in the future.';return;}
+  const evStart=evEnd-H12;
+  out.style.display='';noIn.style.display='none';
+  document.getElementById('leg-owner').textContent=owner;
+  document.getElementById('leg-desired').textContent=desired;
+  document.getElementById('tl-title').textContent=`Timeline — ${facname} (now → event end)`;
+
+  const r=findBestCapture(nowMs,phase,remMs,owner,evEnd);
+  const wb=document.getElementById('warn-box');wb.innerHTML='';
+  const sb=document.getElementById('strategy-box');sb.innerHTML='';
+
+  if(r.type==='impossible_abc_owns'){
+    addBox(wb,`⚠ Impossible: ${owner}'s active timer expires at ${fmt(r.exp)} — after the event ends. XYZ cannot capture in time.`,C.red,true);
+    document.getElementById('cov-section').style.display='none';
+    renderSteps(buildSteps(nowMs,phase,remMs,owner,desired,r,evStart,evEnd));
+    ['m1-val','m2-val','m3-val'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+  if(r.type==='impossible_no_window'){
+    addBox(wb,`⚠ Impossible: no vulnerable window allows ${desired} to cover the event end.`,C.red,true);
+    document.getElementById('cov-section').style.display='none';
+    ['m1-val','m2-val','m3-val'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+
+  const{xyzBattle,xyzCap,xyzExp,window:win,extra,waitInWindow}=r;
+  const sameTime=Math.abs(xyzExp-evEnd)<60000;
+  const missedStart=xyzCap>evStart;
+  const missedDur=Math.max(0,xyzCap-evStart);
+  const covPct=Math.round(Math.max(0,Math.min(100,(1-missedDur/H12)*100)));
+
+  // Coverage bar
+  const covSec=document.getElementById('cov-section');covSec.style.display='';
+  const abcPct=Math.max(0,Math.min(100,(Math.min(xyzCap,evEnd)-evStart)/H12*100));
+  const xyzLeft=Math.max(0,(Math.max(xyzCap,evStart)-evStart)/H12*100);
+  const xyzPct=Math.max(0,Math.min(100,(evEnd-Math.max(xyzCap,evStart))/H12*100));
+  document.getElementById('cov-fill-abc').style.cssText=`background:${C.blue};opacity:.7;left:0;width:${abcPct.toFixed(1)}%;`;
+  document.getElementById('cov-fill-xyz').style.cssText=`background:${C.amber};left:${xyzLeft.toFixed(1)}%;width:${xyzPct.toFixed(1)}%;`;
+  const pctEl=document.getElementById('cov-pct');
+  pctEl.textContent=missedStart?`⚠ ${covPct}% covered (${dur(missedDur)} gap)`:`100% covered ✓`;
+  pctEl.style.color=missedStart?C.red:C.green;
+  document.getElementById('cov-start-lbl').textContent=fmtTime(evStart);
+  document.getElementById('cov-end-lbl').textContent=fmtTime(evEnd);
+  document.getElementById('cov-leg-abc').textContent=owner;
+  document.getElementById('cov-leg-xyz').textContent=desired;
+
+  if(missedStart){
+    addBox(wb,`⚠ Partial coverage: ${desired} can only capture at ${fmt(xyzCap)} — ${dur(missedDur)} after event start (${fmtTime(evStart)}). The event will be ${covPct}% covered. No better window exists.`,C.red,true);
+  }
+
+  let msg;
+  if(sameTime) msg=`Optimal: ${desired} waits ${dur(waitInWindow)} within the vulnerable window, captures at ${fmt(xyzCap)}. Timer expires exactly at event end.`;
+  else if(waitInWindow>60000) msg=`${desired} waits ${dur(waitInWindow)} within the window (until ${fmt(xyzBattle)}), captures at ${fmt(xyzCap)}. Timer expires ${dur(extra)} after event end.`;
+  else msg=`${desired} occupies immediately when the window opens (${fmt(win.start)}). Timer expires ${dur(extra)} after event end.`;
+  addBox(sb,msg,missedStart?C.gold:C.amber,false);
+
+  if(!sameTime&&!missedStart) addBox(wb,`Note: after the event, ${owner} must actively reclaim during the vulnerable phase (option A). If nobody acts, the facility auto-returns to ${desired}!`,C.gold,false);
+
+  // Timeline
+  const tlRange=evEnd-nowMs;
+  const px=ms=>`${Math.max(0,Math.min(100,(ms-nowMs)/tlRange*100)).toFixed(2)}%`;
+  const pw=(a,b)=>`${Math.max(0,Math.min((b-a)/tlRange*100,100)).toFixed(2)}%`;
+  const bar=document.getElementById('tl-bar');bar.innerHTML='';
+  const dsegs=getSegments(nowMs,phase,remMs,owner,Math.min(win.start,evEnd));
+  if(win.start<evEnd)dsegs.push({type:'inactive',start:win.start,end:Math.min(xyzBattle,evEnd)});
+  if(xyzBattle<evEnd)dsegs.push({type:'battle',start:xyzBattle,end:Math.min(xyzCap,evEnd),color:C.gold});
+  if(xyzCap<evEnd)dsegs.push({type:'active',color:C.amber,start:xyzCap,end:evEnd});
+  dsegs.forEach(s=>{
+    if(s.end<=nowMs||s.start>=evEnd)return;
+    const el=document.createElement('div');el.className='tl-seg';
+    el.style.left=px(s.start);el.style.width=pw(s.start,Math.min(s.end,evEnd));
+    if(s.type==='inactive'){
+      // Explicit hatching — no CSS variables
+      el.style.background=`repeating-linear-gradient(135deg,#2e2e4a 0,#2e2e4a 4px,rgba(136,135,128,0.4) 4px,rgba(136,135,128,0.4) 8px)`;
+    } else {
+      el.style.background=s.color||C.blue;
+      el.style.opacity='0.85';
+    }
+    bar.appendChild(el);
+  });
+  [{l:'left:calc(100% - 2px)',c:C.red},{l:'left:0',c:'#666688'}].forEach(({l,c})=>{
+    const el=document.createElement('div');el.className='tl-marker';el.style.cssText=`${l};background:${c};`;bar.appendChild(el);
+  });
+  if(evStart>nowMs&&evStart<evEnd){
+    const lp=(evStart-nowMs)/tlRange*100;
+    if(lp>0&&lp<100){const el=document.createElement('div');el.className='tl-marker';el.style.cssText=`left:${lp.toFixed(2)}%;background:${C.green};`;bar.appendChild(el);}
+  }
+
+  const lblRow=document.getElementById('tl-labels');lblRow.innerHTML='';
+  const ticks=[{t:nowMs,l:'now'},{t:win.start,l:'vuln'},{t:xyzBattle,l:'⚔'},{t:evStart,l:'🏁'},{t:evEnd,l:'🎯'}];
+  if(xyzCap>nowMs&&xyzCap<evEnd)ticks.push({t:xyzCap,l:`${desired}✓`});
+  ticks.sort((a,b)=>a.t-b.t);
+  const placed=[];
+  ticks.forEach(({t,l})=>{
+    const lp=(t-nowMs)/tlRange*100;if(lp<0||lp>100)return;
+    if(placed.some(p=>Math.abs(p-lp)<8))return;
+    placed.push(lp);
+    const el=document.createElement('div');el.className='tl-tick';el.style.left=lp.toFixed(1)+'%';el.textContent=l;lblRow.appendChild(el);
+  });
+
+  renderSteps(buildSteps(nowMs,phase,remMs,owner,desired,r,evStart,evEnd));
+
+  document.getElementById('m1-lbl').textContent=`${owner} holds until`;
+  document.getElementById('m1-val').textContent=fmt(win.start).split(' ').slice(0,3).join(' ');
+  document.getElementById('m2-val').textContent=sameTime?'Event end':fmt(xyzExp).split(' ').slice(0,3).join(' ')+` (+${dur(extra)})`;
+  document.getElementById('m3-lbl').textContent=`${owner} reclaims`;
+  document.getElementById('m3-val').textContent=fmt((sameTime?evEnd:xyzExp)+M20).split(' ').slice(0,3).join(' ')+' (opt. A)';
+}
+
+function renderSteps(steps){
+  const PH={cycle:'INTERMEDIATE CYCLES',attack:'TRANSFER',event:'EVENT',post:'POST-EVENT — RECLAIM'};
+  const container=document.getElementById('steps');container.innerHTML='';
+  let lastP=null;
+  steps.forEach(s=>{
+    if(s.phase&&s.phase!=='setup'&&s.phase!==lastP&&PH[s.phase]){
+      const h=document.createElement('div');h.className='phase-header';h.textContent=PH[s.phase];container.appendChild(h);lastP=s.phase;
+    }
+    const isOpt=s.isOptA||s.isOptB,isWait=s.isWait;
+    const el=document.createElement('div');
+    el.className='step'+(isOpt?' opt':'');
+    el.style.background=s.highlight?'rgba(226,75,74,0.12)':isOpt?'transparent':'var(--bg1)';
+    const bc=s.warnOpt?C.amber:s.color;
+    el.style.borderLeft=`${isOpt||isWait?'2':'3'}px ${isOpt?'dashed':isWait?'dotted':'solid'} ${bc}`;
+    const bub=document.createElement('div');bub.className='bubble';
+    if(isOpt)bub.style.cssText=`background:transparent;border:1.5px solid ${bc};color:${bc};font-size:11px;`;
+    else if(isWait)bub.style.cssText=`background:transparent;border:1.5px dotted ${s.color};color:${s.color};font-size:16px;`;
+    else{bub.style.background=s.color;bub.style.color=(s.darkText||s.color===C.gold||s.color===C.amber)?'#111':'#fff';}
+    bub.textContent=s.isOptA?'A':s.isOptB?'B':isWait?'…':s.n;
+    const body=document.createElement('div');body.style.flex='1';
+    const top=document.createElement('div');top.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;';
+    const title=document.createElement('span');title.className='step-title';title.textContent=s.title;
+    const time=document.createElement('span');time.className='step-time';time.textContent=fmt(s.time);
+    top.appendChild(title);top.appendChild(time);
+    const note=document.createElement('p');note.className='step-note';note.textContent=s.note;
+    body.appendChild(top);body.appendChild(note);el.appendChild(bub);el.appendChild(body);container.appendChild(el);
+  });
+}
+calc();
+</script>
+</body>
+</html>
