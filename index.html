@@ -295,13 +295,14 @@ function generateWindows(nowMs, phase, remMs, upTo) {
 }
 
 // Find best plan:
-// - Last viable window for XYZ (ABC holds longest)
-// - Within that window: attack at max(win.start, evEnd-H72-M20) [latest possible = timer expires at evEnd]
-// - All earlier windows: RESET
+// Priority 1: FULL COVERAGE — latest window where win.start <= evStart - M20
+//             (XYZ can capture before event start, ABC holds as long as possible)
+// Priority 2: PARTIAL COVERAGE — last viable window (best available)
+// All windows before the chosen XYZ window = RESET windows
 function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd) {
-  const windows = generateWindows(nowMs, phase, remMs, evEnd + H72 + H24);
+  const windows = generateWindows(nowMs, phase, remMs, evEnd + H72 + H24*2);
 
-  // Viable: XYZ can capture and cover evEnd
+  // Viable: capturing anywhere in window covers evEnd
   // win.end + H72 >= evEnd  AND  win.start < evEnd
   const viable = windows.filter(w => w.end + H72 >= evEnd && w.start < evEnd);
 
@@ -310,12 +311,20 @@ function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd) {
     return {type:'impossible_no_window'};
   }
 
-  // Last viable = ABC holds longest before event
-  const win = viable[viable.length - 1];
+  // Priority 1: latest window that allows FULL COVERAGE
+  // Full coverage requires XYZ to capture before evStart:
+  //   xyzBattle = max(win.start, ...) <= evStart - M20
+  //   → need win.start <= evStart - M20
+  const fullCovWins = viable.filter(w => w.start <= evStart - M20);
+  const win = fullCovWins.length > 0
+    ? fullCovWins[fullCovWins.length - 1]   // latest full-coverage window
+    : viable[viable.length - 1];             // fallback: latest viable (partial)
 
-  // Optimal attack time within window: as late as possible so timer expires at evEnd
+  // Within the chosen window, attack as late as possible so timer expires at evEnd
   const idealBattle = evEnd - H72 - M20;
-  const xyzBattle = Math.max(win.start, Math.min(idealBattle, win.end - M20));
+  // Also cap at evStart - M20 to avoid missing event start unnecessarily
+  const latestForFullCov = evStart - M20;
+  const xyzBattle = Math.max(win.start, Math.min(idealBattle, latestForFullCov, win.end - M20));
   const xyzCap = xyzBattle + M20;
   const xyzExp = xyzCap + H72;
   const extra = Math.max(0, xyzExp - evEnd);
@@ -324,7 +333,7 @@ function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd) {
   const evDur = evEnd - evStart;
   const covPct = Math.round(Math.max(0, Math.min(100, (1 - Math.max(0, xyzCap-evStart)/evDur)*100)));
 
-  // All windows before the XYZ window = reset windows
+  // All windows before the chosen XYZ window = reset windows
   const resetWindows = windows.filter(w => w.start < win.start);
 
   return {type:'inactive_window', xyzBattle, xyzCap, xyzExp, window:win, resetWindows, extra, waitInWindow, missedStart, covPct};
@@ -795,7 +804,26 @@ function updateEventHint(){
   hint.textContent=`${fmt(s)} → ${fmt(e)}`;
 }
 function onModalPhaseToggle(){const v=document.getElementById('f-phase').checked;document.getElementById('f-rem-label').textContent=v?'Remaining Vulnerable Time (d:hh:mm)':'Remaining Active Time (d:hh:mm)';document.getElementById('m-lbl-active').style.fontWeight=v?'400':'700';document.getElementById('m-lbl-vuln').style.fontWeight=v?'700':'400';}
-function onModalRemInput(){const ms=parseTime(document.getElementById('f-rem').value);const h=document.getElementById('f-rem-hint');if(ms>0){const d=Math.floor(ms/86400000),hh=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);const p=[];if(d)p.push(d+'d');if(hh)p.push(hh+'h');if(m)p.push(m+'m');h.textContent='= '+p.join(' ');h.className='hint';}else{h.textContent='Invalid — use d:hh:mm';h.className='hint err';}}
+function onModalRemInput(){
+  const ms=parseTime(document.getElementById('f-rem').value);
+  const h=document.getElementById('f-rem-hint');
+  const phase=document.getElementById('f-phase').checked?'vulnerable':'active';
+  const maxMs=phase==='vulnerable'?H24:H72;
+  if(ms>0){
+    const d=Math.floor(ms/86400000),hh=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);
+    const p=[];if(d)p.push(d+'d');if(hh)p.push(hh+'h');if(m)p.push(m+'m');
+    h.textContent='= '+p.join(' ');
+    if(ms>maxMs){
+      h.textContent+=' ⚠ Warning: '+( phase==='active'?'active phase max is 72h (3:00:00)':'vulnerable phase max is 24h (0:24:00)');
+      h.className='hint err';
+    } else {
+      h.className='hint';
+    }
+  } else {
+    h.textContent='Invalid — use d:hh:mm e.g. 0:17:30 = 17h 30min, 2:03:00 = 2 days 3h';
+    h.className='hint err';
+  }
+}
 
 function openAddModal(){
   document.getElementById('edit-id').value='';document.getElementById('modal-title').textContent='Add Facility';
