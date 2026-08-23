@@ -134,6 +134,14 @@ select option{background:var(--bg2);}
 .detail-backdrop.open{display:flex;}
 .detail-panel{background:var(--bg0);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:700px;width:100%;margin:auto;}
 .event-preset-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.strategy-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.strategy-tab{padding:8px 10px;border:1.5px solid var(--border2);border-radius:8px;background:transparent;color:var(--txt2);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .15s;flex:1;text-align:center;line-height:1.4;}
+.strategy-tab:hover{border-color:var(--txt2);color:var(--txt1);}
+.strategy-tab.active{border-color:var(--blue);background:rgba(55,138,221,.12);color:var(--blue);}
+.strategy-badge{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:5px;vertical-align:middle;}
+.badge-asap{background:rgba(55,138,221,.15);color:var(--blue);}
+.badge-buffer{background:rgba(34,170,102,.15);color:var(--green);}
+.badge-manual{background:rgba(155,89,182,.15);color:var(--purple);}
 </style>
 </head>
 <body>
@@ -200,6 +208,23 @@ select option{background:var(--bg2);}
     <span class="label" id="f-rem-label">Remaining Active Time (d:hh:mm)</span>
     <input type="text" id="f-rem" value="2:03:00" class="mono mb4" oninput="onModalRemInput()" placeholder="d:hh:mm"/>
     <p class="hint mb16" id="f-rem-hint">= 2 days 3 hours 0 minutes</p>
+    <span class="label">Handover Strategy</span>
+    <div class="strategy-tabs">
+      <button class="strategy-tab active" id="stab-asap" onclick="setStrategy('asap')">🎯 Get back ASAP<br><span style="font-size:10px;font-weight:400;opacity:.8;">Timer expires at event end</span></button>
+      <button class="strategy-tab" id="stab-buffer" onclick="setStrategy('buffer')">⏳ Hold as long as possible<br><span style="font-size:10px;font-weight:400;opacity:.8;">ABC keeps boost until near event</span></button>
+      <button class="strategy-tab" id="stab-manual" onclick="setStrategy('manual')">✏️ Manual time<br><span style="font-size:10px;font-weight:400;opacity:.8;">Full flexibility</span></button>
+    </div>
+    <input type="hidden" id="f-strategy" value="asap"/>
+    <div id="s-buffer-fields" style="display:none;" class="mb12">
+      <span class="label">Buffer before event start (d:hh:mm)</span>
+      <input type="text" id="f-buffer" value="0:02:00" class="mono mb4" oninput="onBufferInput()" placeholder="e.g. 0:02:00 = 2h before event"/>
+      <p class="hint" id="f-buffer-hint">= 2 hours before event start</p>
+    </div>
+    <div id="s-manual-fields" style="display:none;" class="mb12">
+      <span class="label">XYZ captures at (UTC)</span>
+      <input type="datetime-local" id="f-manual-time" class="mb4" oninput="updateManualHint()"/>
+      <p class="hint" id="f-manual-hint"></p>
+    </div>
     <span class="label">Event Type</span>
     <div class="event-preset-row">
       <select id="f-event-type" onchange="onEventTypeChange()">
@@ -294,49 +319,61 @@ function generateWindows(nowMs, phase, remMs, upTo) {
   return windows;
 }
 
-// Find best plan:
-// Priority 1: FULL COVERAGE — latest window where win.start <= evStart - M20
-//             (XYZ can capture before event start, ABC holds as long as possible)
-// Priority 2: PARTIAL COVERAGE — last viable window (best available)
-// All windows before the chosen XYZ window = RESET windows
-function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd) {
-  const windows = generateWindows(nowMs, phase, remMs, evEnd + H72 + H24*2);
+// Three handover strategies:
+// 'asap'   → xyzCapture = evEnd−72h  — timer expires at event end, ABC reclaims ASAP
+// 'buffer' → xyzCapture = evStart−buffer — ABC holds longest, gets it back ~72h after capture
+// 'manual' → xyzCapture = user-chosen time — full flexibility
+function findBestCapture(nowMs, phase, remMs, owner, evStart, evEnd, strategy, strategyBufferMs, strategyManualMs) {
+  strategy = strategy || 'asap';
+  const upTo = Math.max(evEnd, (strategyManualMs||0)) + H72 + H24*2;
+  const windows = generateWindows(nowMs, phase, remMs, upTo);
+  if (windows.length === 0) return {type:'impossible_no_window'};
 
-  // Viable: capturing anywhere in window covers evEnd
-  // win.end + H72 >= evEnd  AND  win.start < evEnd
-  const viable = windows.filter(w => w.end + H72 >= evEnd && w.start < evEnd);
+  // Target battle time depends on strategy
+  let targetBattle;
+  if (strategy === 'manual' && strategyManualMs) {
+    targetBattle = strategyManualMs - M20;
+  } else if (strategy === 'buffer') {
+    targetBattle = evStart - (strategyBufferMs||0) - M20;
+  } else {
+    targetBattle = evEnd - H72 - M20; // asap
+  }
+  if (targetBattle < nowMs) targetBattle = nowMs;
 
-  if (viable.length === 0) {
-    if (phase === 'active' && nowMs + remMs >= evEnd) return {type:'impossible_abc_owns', exp: nowMs+remMs};
-    return {type:'impossible_no_window'};
+  const allWins = windows.filter(w => w.start <= upTo);
+  if (allWins.length === 0) return {type:'impossible_no_window'};
+
+  let win;
+  if (strategy === 'asap') {
+    const viable = allWins.filter(w => w.end + H72 >= evEnd && w.start < evEnd);
+    if (viable.length === 0) {
+      if (phase==='active' && nowMs+remMs >= evEnd) return {type:'impossible_abc_owns', exp:nowMs+remMs};
+      return {type:'impossible_no_window'};
+    }
+    const fullCov = viable.filter(w => w.start <= evStart - M20);
+    win = fullCov.length > 0 ? fullCov[fullCov.length-1] : viable[viable.length-1];
+  } else {
+    // Find window containing targetBattle, else nearest window before it
+    const containing = allWins.filter(w => w.start <= targetBattle && w.start+H24-M20 >= targetBattle);
+    if (containing.length > 0) {
+      win = containing[containing.length-1];
+    } else {
+      const before = allWins.filter(w => w.start <= targetBattle);
+      win = before.length > 0 ? before[before.length-1] : allWins[0];
+    }
   }
 
-  // Priority 1: latest window that allows FULL COVERAGE
-  // Full coverage requires XYZ to capture before evStart:
-  //   xyzBattle = max(win.start, ...) <= evStart - M20
-  //   → need win.start <= evStart - M20
-  const fullCovWins = viable.filter(w => w.start <= evStart - M20);
-  const win = fullCovWins.length > 0
-    ? fullCovWins[fullCovWins.length - 1]   // latest full-coverage window
-    : viable[viable.length - 1];             // fallback: latest viable (partial)
-
-  // Within the chosen window, attack as late as possible so timer expires at evEnd
-  const idealBattle = evEnd - H72 - M20;
-  // Also cap at evStart - M20 to avoid missing event start unnecessarily
-  const latestForFullCov = evStart - M20;
-  const xyzBattle = Math.max(win.start, Math.min(idealBattle, latestForFullCov, win.end - M20));
+  const xyzBattle = Math.max(win.start, Math.min(targetBattle, win.start+H24-M20));
   const xyzCap = xyzBattle + M20;
   const xyzExp = xyzCap + H72;
   const extra = Math.max(0, xyzExp - evEnd);
   const waitInWindow = xyzBattle - win.start;
   const missedStart = xyzCap > evStart;
   const evDur = evEnd - evStart;
-  const covPct = Math.round(Math.max(0, Math.min(100, (1 - Math.max(0, xyzCap-evStart)/evDur)*100)));
-
-  // All windows before the chosen XYZ window = reset windows
+  const covPct = Math.round(Math.max(0, Math.min(100, (1-Math.max(0,xyzCap-evStart)/evDur)*100)));
   const resetWindows = windows.filter(w => w.start < win.start);
 
-  return {type:'inactive_window', xyzBattle, xyzCap, xyzExp, window:win, resetWindows, extra, waitInWindow, missedStart, covPct};
+  return {type:'inactive_window', xyzBattle, xyzCap, xyzExp, window:win, resetWindows, extra, waitInWindow, missedStart, covPct, strategy};
 }
 
 function calcFacility(fac) {
@@ -359,8 +396,11 @@ function calcFacility(fac) {
     // if > H24 since expiry, auto-reclaim happened - treat as active with new 72h
     // This is approximate; user should update manually
   }
-  const r = findBestCapture(nowMs, phase, effectiveRemMs, fac.owner, evStart, evEnd);
-  return {nowMs, remMs, effectiveRemMs, phase, evStart, evEnd, r};
+  const strategy = fac.strategy || 'asap';
+  const strategyBufferMs = fac.strategy_buffer_ms || 0;
+  const strategyManualMs = fac.strategy_manual_time ? new Date(fac.strategy_manual_time).getTime() : null;
+  const r = findBestCapture(nowMs, phase, effectiveRemMs, fac.owner, evStart, evEnd, strategy, strategyBufferMs, strategyManualMs);
+  return {nowMs, remMs, effectiveRemMs, phase, evStart, evEnd, r, strategy};
 }
 
 // Build timeline segments for rendering
@@ -455,8 +495,9 @@ function buildSteps(nowMs, phase, remMs, owner, desired, r, evStart, evEnd) {
       note:`Wait ${dur(waitInWindow)} until ${fmt(xyzBattle)} — timer will expire at event end.`,isWait:true},'attack');
   }
 
+  const stratNote=(r.strategy==='buffer')?`${desired} occupies. ABC held until event was close. Timer expires ${dur(r.extra)} after event — ABC can reclaim via reset then.`:(r.strategy==='manual')?`${desired} occupies at manually chosen time. Timer expires ${fmt(xyzExp)}.`:`${desired} occupies. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`;
   add({color:C.gold,title:`${desired}: start 20-min occupation (TAKEOVER — no reset!)`,time:xyzBattle,
-    note:`${desired} occupies. Timer expires ${sameTime?'exactly at event end':dur(r.extra)+' after event end'}.`,darkText:true},'attack');
+    note:stratNote,darkText:true},'attack');
   add({color:C.amber,title:`${desired} captures — 72h timer starts`,time:xyzCap,
     note:`Timer expires ${fmt(xyzExp)}${sameTime?' (= event end)':` (+${dur(r.extra)})`}.`,darkText:true},'attack');
 
@@ -593,6 +634,9 @@ function makeCard(fac){
   const phColor=phase==='vulnerable'?C.amber:C.blue;
   const phText=phase==='vulnerable'?'VULNERABLE':'ACTIVE';
   const evLabel=fac.event_type&&fac.event_type!=='custom'?(EVENT_PRESETS[fac.event_type]?.label||''):'';
+  const strat=fac.strategy||'asap';
+  const stratLabel={'asap':'🎯 ASAP','buffer':'⏳ Hold long','manual':'✏️ Manual'}[strat]||'🎯 ASAP';
+  const stratBadgeClass={'asap':'badge-asap','buffer':'badge-buffer','manual':'badge-manual'}[strat]||'badge-asap';
 
   // Resets count
   const resetCount=r.type==='inactive_window'?r.resetWindows.length:0;
@@ -632,7 +676,7 @@ function makeCard(fac){
             <span style="color:${C.blue};font-weight:500;">${escHtml(fac.owner)}</span>
             <span style="margin:0 5px;">→</span>
             <span style="color:${C.amber};font-weight:500;">${escHtml(fac.desired)}</span>
-            <span style="margin-left:8px;font-size:10px;padding:1px 6px;border-radius:4px;background:${phColor}22;color:${phColor};font-weight:600;">${phText}</span>
+            <span style="margin-left:8px;font-size:10px;padding:1px 6px;border-radius:4px;background:${phColor}22;color:${phColor};font-weight:600;">${phText}</span><span class="strategy-badge ${stratBadgeClass}">${stratLabel}</span>
           </div>
         </div>
         <span class="status-badge ${badgeClass}">${badgeText}</span>
@@ -672,7 +716,10 @@ function renderDetail(fac){
   const remMs=Math.max(0,expiresAt-nowMs);
   let phase=fac.phase,effectiveRemMs=remMs;
   if(phase==='active'&&remMs===0){const d=nowMs-expiresAt;if(d<H24){phase='vulnerable';effectiveRemMs=H24-d;}}
-  const r=findBestCapture(nowMs,phase,effectiveRemMs,fac.owner,evStart,evEnd);
+  const strategy=fac.strategy||'asap';
+  const strategyBufferMs=fac.strategy_buffer_ms||0;
+  const strategyManualMs=fac.strategy_manual_time?new Date(fac.strategy_manual_time).getTime():null;
+  const r=findBestCapture(nowMs,phase,effectiveRemMs,fac.owner,evStart,evEnd,strategy,strategyBufferMs,strategyManualMs);
   const container=document.getElementById('detail-content');container.innerHTML='';
 
   function addBox(msg,color,strong){const d=document.createElement('div');d.className='info-box';d.style.cssText=`background:${color}22;border:${strong?'1.5px':'1px'} solid ${color}${strong?'':'88'};color:${strong?'#fff':'#ccc'};${strong?'font-weight:500;':''}`;d.textContent=msg;container.appendChild(d);}
@@ -791,6 +838,23 @@ function renderSteps(steps,container){
 // ══════════════════════════════════════════════
 // FORM
 // ══════════════════════════════════════════════
+function setStrategy(s){
+  document.getElementById('f-strategy').value=s;
+  ['asap','buffer','manual'].forEach(k=>{document.getElementById('stab-'+k).classList.toggle('active',k===s);});
+  document.getElementById('s-buffer-fields').style.display=s==='buffer'?'':'none';
+  document.getElementById('s-manual-fields').style.display=s==='manual'?'':'none';
+}
+function onBufferInput(){
+  const ms=parseTime(document.getElementById('f-buffer').value);
+  const h=document.getElementById('f-buffer-hint');
+  if(ms>0){const hh=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);h.textContent='= '+hh+'h '+(m?m+'m ':'')+' before event start';h.className='hint';}
+  else{h.textContent='Invalid — use d:hh:mm e.g. 0:02:00';h.className='hint err';}
+}
+function updateManualHint(){
+  const v=document.getElementById('f-manual-time').value;
+  const hint=document.getElementById('f-manual-hint');
+  if(v){const ms=new Date(v+':00Z').getTime();hint.textContent=`XYZ holds from ${fmt(ms)} to ${fmt(ms+H72)}`;}
+}
 function setDefaultDate(){const d=new Date(),dts=(6-d.getUTCDay()+7)%7||7;d.setUTCDate(d.getUTCDate()+dts);document.getElementById('f-event-date').value=d.toISOString().slice(0,10);updateEventHint();}
 function onEventTypeChange(){const t=document.getElementById('f-event-type').value;document.getElementById('f-event-date').style.display=t==='custom'?'none':'';document.getElementById('f-custom-wrap').style.display=t==='custom'?'':'none';updateEventHint();}
 function onEventDateChange(){updateEventHint();}
@@ -830,7 +894,7 @@ function openAddModal(){
   document.getElementById('f-name').value='';document.getElementById('f-owner').value='ABC';document.getElementById('f-desired').value='XYZ';
   document.getElementById('f-phase').checked=false;document.getElementById('f-rem').value='2:03:00';document.getElementById('f-rem-hint').textContent='= 2 days 3 hours 0 minutes';
   document.getElementById('f-rem-label').textContent='Remaining Active Time (d:hh:mm)';document.getElementById('m-lbl-active').style.fontWeight='700';document.getElementById('m-lbl-vuln').style.fontWeight='400';
-  document.getElementById('f-event-type').value='sunfire';onEventTypeChange();setDefaultDate();
+  document.getElementById('f-event-type').value='sunfire';onEventTypeChange();setDefaultDate();setStrategy('asap');
   document.getElementById('form-modal').classList.add('open');setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
 function openEditModal(id){
@@ -846,7 +910,11 @@ function openEditModal(id){
   const et=fac.event_type||'custom';document.getElementById('f-event-type').value=et;
   if(et!=='custom'&&fac.event_end){document.getElementById('f-event-date').value=new Date(fac.event_end).toISOString().slice(0,10);}
   else{if(fac.event_start)document.getElementById('f-evstart').value=new Date(fac.event_start).toISOString().slice(0,16);if(fac.event_end)document.getElementById('f-evend').value=new Date(fac.event_end).toISOString().slice(0,16);}
-  onEventTypeChange();document.getElementById('form-modal').classList.add('open');
+  onEventTypeChange();
+  const strat=fac.strategy||'asap';setStrategy(strat);
+  if(strat==='buffer'&&fac.strategy_buffer_ms){const bms=fac.strategy_buffer_ms;const bh=Math.floor(bms/3600000),bm=Math.floor((bms%3600000)/60000);document.getElementById('f-buffer').value=`0:${String(bh).padStart(2,'0')}:${String(bm).padStart(2,'0')}`;onBufferInput();}
+  if(strat==='manual'&&fac.strategy_manual_time){document.getElementById('f-manual-time').value=new Date(fac.strategy_manual_time).toISOString().slice(0,16);updateManualHint();}
+  document.getElementById('form-modal').classList.add('open');
 }
 function closeFormModal(){document.getElementById('form-modal').classList.remove('open');}
 
@@ -860,7 +928,11 @@ async function saveFacility(){
   if(evEnd<=Date.now()){alert('Event end must be in the future.');return;}
   const expiresAt=new Date(Date.now()+remMs).toISOString();const editId=document.getElementById('edit-id').value;
   const btn=document.getElementById('save-btn');btn.textContent='Saving…';btn.disabled=true;
-  const payload={name,owner,desired,phase,expires_at:expiresAt,event_start:new Date(evStart).toISOString(),event_end:new Date(evEnd).toISOString(),event_type:eventType,updated_at:new Date().toISOString()};
+  const strategy=document.getElementById('f-strategy').value;
+  let strategyBufferMs=0,strategyManualTime=null;
+  if(strategy==='buffer'){strategyBufferMs=parseTime(document.getElementById('f-buffer').value)||0;}
+  if(strategy==='manual'){const mv=document.getElementById('f-manual-time').value;if(!mv){alert('Please set a manual handover time.');return;}strategyManualTime=new Date(mv+':00Z').toISOString();}
+  const payload={name,owner,desired,phase,expires_at:expiresAt,event_start:new Date(evStart).toISOString(),event_end:new Date(evEnd).toISOString(),event_type:eventType,strategy,strategy_buffer_ms:strategyBufferMs,strategy_manual_time:strategyManualTime,updated_at:new Date().toISOString()};
   let error;
   if(editId)({error}=await sb.from('facilities').update(payload).eq('id',editId));
   else({error}=await sb.from('facilities').insert(payload));
